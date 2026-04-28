@@ -1177,13 +1177,11 @@ body::after{
 </style>
 </head>
 <body>
-
 <div class="museum-bg"></div>
 <div class="vignette"></div>
 <div class="light-beam"></div>
 <div class="museum-frame-top"></div>
 <div class="museum-frame-bottom"></div>
-
 <div class="corner-ornament co-tl">
   <svg viewBox="0 0 60 60" fill="none">
     <path d="M5 5 L5 25 Q5 5 25 5 Z" fill="rgba(201,169,110,0.6)"/>
@@ -1217,6 +1215,7 @@ body::after{
   </svg>
 </div>
 
+<!-- Main Container -->
 <div class="container">
   <div class="header">
     <div class="header-line">
@@ -1237,7 +1236,6 @@ body::after{
       <div class="orn-line r"></div>
     </div>
   </div>
-
   <div class="progress-section">
     <div class="prog-label-top">Exhibition Progress</div>
     <div class="prog-row">
@@ -1250,11 +1248,11 @@ body::after{
       <div class="prog-fill" id="progressBar"></div>
     </div>
   </div>
-
   <div class="section-title"><span>The Gallery</span></div>
   <div class="booth-grid" id="boothGrid"></div>
 </div>
 
+<!-- Bottom Bar -->
 <div class="bottom-bar">
   <button class="scan-btn" id="mainScanBtn" onclick="openScanner()">
     <span>▣</span><span>สแกน QR Code</span>
@@ -1302,8 +1300,7 @@ body::after{
 <div class="modal-overlay" id="winModal">
   <div class="sheet win-sheet">
     <div class="handle"></div>
-
-    <!-- ===== สถานะ 1: ยังไม่รับ ===== -->
+    <!-- สถานะ 1: ยังไม่รับ -->
     <div id="reward-pending">
       <div style="font-size:2.2rem;margin-bottom:6px">🏆</div>
       <div class="s-title" style="background:linear-gradient(90deg,#c9a96e,#e8cc99,#c9a96e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200%">
@@ -1322,42 +1319,43 @@ body::after{
       </div>
       <button class="s-btn" onclick="claimReward()">รับทราบ — ไปรับของรางวัล</button>
     </div>
-
-    <!-- ===== สถานะ 2: รับรางวัลแล้ว ===== -->
-    <!-- ===== สถานะ 2: รับรางวัลแล้ว ===== -->
-<div id="reward-claimed" style="display:none;">
-
-  <!-- Animated Checkmark -->
-  <div class="claimed-check-circle">
-    <svg class="claimed-check-svg" viewBox="0 0 52 52">
-      <circle class="claimed-check-bg" cx="26" cy="26" r="25"/>
-      <path class="claimed-check-mark" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-    </svg>
-  </div>
-
-  <div class="claimed-title">รับรางวัลแล้ว</div>
-  <div class="claimed-subtitle">ขอบคุณที่ร่วมกิจกรรม!</div>
-
-  <div class="claimed-divider"><span>✦</span></div>
-
-  <!-- Event Badge -->
-  <div class="claimed-badge">
-    <div class="claimed-badge-icon">🏛️</div>
-    <div class="claimed-badge-text">
-      <div class="claimed-badge-name">Coexist · COSCI</div>
-      <div class="claimed-badge-sub">Museum of Student Innovation</div>
+    <!-- ✅ สถานะ 2: รับรางวัลแล้ว — ไม่มี memberModal อยู่ในนี้ -->
+    <div id="reward-claimed" style="display:none;">
+      <div class="claimed-check-circle">
+        <svg class="claimed-check-svg" viewBox="0 0 52 52">
+          <circle class="claimed-check-bg" cx="26" cy="26" r="25"/>
+          <path class="claimed-check-mark" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+        </svg>
+      </div>
+      <div class="claimed-title">รับรางวัลแล้ว</div>
+      <div class="claimed-subtitle">ขอบคุณที่ร่วมกิจกรรม!</div>
+      <div class="claimed-divider"><span>✦</span></div>
+      <div class="claimed-badge">
+        <div class="claimed-badge-icon">🏛️</div>
+        <div class="claimed-badge-text">
+          <div class="claimed-badge-name">Coexist · COSCI</div>
+          <div class="claimed-badge-sub">Museum of Student Innovation</div>
+        </div>
+      </div>
+      <div class="claimed-stamp">
+        <div class="claimed-stamp-inner">
+          <div class="claimed-stamp-text">CLAIMED</div>
+          <div class="claimed-stamp-date" id="claimed-time"></div>
+        </div>
+      </div>
+      <div class="claimed-confetti">
+        <span style="--i:0">✦</span>
+        <span style="--i:1">·</span>
+        <span style="--i:2">✦</span>
+        <span style="--i:3">·</span>
+        <span style="--i:4">✦</span>
+      </div>
+      <button class="s-btn claimed-done-btn" onclick="closeModal('winModal')">ตกลง</button>
     </div>
   </div>
+</div>
 
-  <!-- Stamp -->
-  <div class="claimed-stamp">
-    <div class="claimed-stamp-inner">
-      <div class="claimed-stamp-text">CLAIMED</div>
-      <div class="claimed-stamp-date" id="claimed-time"></div>
-    </div>
-  </div>
-
-<!-- ===== Member Contact Modal ===== -->
+<!-- ✅ memberModal — อยู่นอก winModal ถูกต้อง! -->
 <div class="modal-overlay" id="memberModal">
   <div class="sheet member-sheet">
     <div class="handle"></div>
@@ -1372,46 +1370,7 @@ body::after{
   </div>
 </div>
 
-  <!-- Confetti dots -->
-  <div class="claimed-confetti">
-    <span style="--i:0">✦</span>
-    <span style="--i:1">·</span>
-    <span style="--i:2">✦</span>
-    <span style="--i:3">·</span>
-    <span style="--i:4">✦</span>
-  </div>
-
-  <button class="s-btn claimed-done-btn" onclick="closeModal('winModal')">ตกลง</button>
-</div>
-
-  </div>
-</div>
-
-<!-- Date Lock -->
-<div class="date-lock" id="dateLock">
-  <div class="dl-icon" id="dlIcon">🏛️</div>
-  <div class="dl-title" id="dlTitle">ยังไม่ถึงวันงาน</div>
-  <div class="dl-sub" id="dlSub">
-    
-    กิจกรรมนี้จัดขึ้นในวันที่<br>
-    17 — 18 พฤษภาคม 2569
-  </div>
-  <div class="dl-date-box">
-    <div class="dl-date-label">— Event Date —</div>
-    <div class="dl-date-text">17 · 18 May 2026</div>
-    <div class="dl-current" id="dlCurrent"></div>
-  </div>
-  <div class="dl-ornament"><span>✦</span></div>
-  <div class="countdown-wrap" id="countdownWrap">
-    <div class="countdown-label">เริ่มงานใน</div>
-    <div class="countdown-timer" id="countdownTimer">--:--:--</div>
-  </div>
-  <div style="font-family:'Times New Roman',Times,serif;font-size:0.8rem;color:rgba(201,169,110,0.25);font-style:italic;letter-spacing:1px;margin-top:16px">
-     Coexist · COSCI
-     <button class="dl-admin-btn" onclick="openAdminLogin()">⚙</button>
-  </div>
-</div>
-
+<!-- ✅ Date Lock — มีแค่ 1 ตัว -->
 <div class="date-lock" id="dateLock">
   <div class="dl-icon" id="dlIcon">🏛️</div>
   <div class="dl-title" id="dlTitle">ยังไม่ถึงวันงาน</div>
@@ -1430,13 +1389,10 @@ body::after{
     <div class="countdown-timer" id="countdownTimer">--:--:--</div>
   </div>
   <div style="font-family:'Times New Roman',Times,serif;font-size:0.8rem;color:rgba(201,169,110,0.25);font-style:italic;letter-spacing:1px;margin-top:16px">
-     Coexist · COSCI
-     
+    Coexist · COSCI
   </div>
-
-  <!-- ✅ เพิ่มปุ่ม Admin ตรงนี้ -->
+  <!-- ✅ ปุ่ม Admin มีแค่ 1 ตัว -->
   <button class="dl-admin-btn" onclick="openAdminLogin()" title="Admin">⚙</button>
-
 </div>
 
 <!-- Admin Login Modal -->
@@ -1459,38 +1415,17 @@ body::after{
   </div>
 </div>
 
-<!-- ===== Member Contact Modal ===== -->
-<div class="modal-overlay" id="memberModal">
-  <div class="sheet member-sheet">
-    <div class="handle"></div>
-    <div class="member-header">
-      <div class="member-booth-num" id="memberBoothNum">Exhibit No.01</div>
-      <div class="member-booth-name" id="memberBoothName">ชื่อบูธ</div>
-      <div class="member-divider"><span>✦</span></div>
-      <div class="member-label">Team Members</div>
-    </div>
-    <div class="member-list" id="memberList">
-      <!-- Generated by JS -->
-    </div>
-    <button class="s-btn member-close-btn" onclick="closeModal('memberModal')">ปิด</button>
-  </div>
-</div>
-
 </body>
   
 <script>
   
-  // ===== รับรางวัล =====
+// ===== รับรางวัล =====
 function claimReward() {
-  var today = new Date().toISOString().split('T'); // "2026-05-17"
+  var today = new Date().toISOString().split('T'); // ✅ แก้ เพิ่ม 
   var lastClaimed = localStorage.getItem('reward_claimed_date');
-
-  // ===== เช็คว่าวันนี้รับไปแล้วหรือยัง =====
   if (lastClaimed === today) {
-    // วันนี้รับไปแล้ว — แสดงแจ้งเตือน
     document.getElementById('reward-pending').style.display = 'none';
     document.getElementById('reward-claimed').style.display = 'block';
-
     var t = localStorage.getItem('reward_claimed_time');
     if (t) {
       document.getElementById('claimed-time').textContent =
@@ -1498,76 +1433,26 @@ function claimReward() {
     }
     return;
   }
-
-  // ===== รับรางวัลวันนี้ =====
   var now = new Date().toISOString();
-
   localStorage.setItem('reward_claimed', 'true');
-  localStorage.setItem('reward_claimed_date', today);
+  localStorage.setItem('reward_claimed_date', today); // ✅ เก็บ string ถูกต้อง
   localStorage.setItem('reward_claimed_time', now);
-
-  // เปลี่ยน UI
   document.getElementById('reward-pending').style.display = 'none';
   document.getElementById('reward-claimed').style.display = 'block';
   document.getElementById('claimed-time').textContent =
     new Date(now).toLocaleString('th-TH');
-
-  // อัพเดทการ์ด 11
   updateCard11();
 }
 
-// ===== อัพเดทการ์ด 11 =====
-function updateCard11() {
-  var card = document.querySelector('.reward-card');
-  if (card) {
-    card.className = 'reward-card claimed';
-    card.onclick = null;
-  }
-}
-
-// ===== แก้ showWinModal เดิม — เช็คสถานะก่อนแสดง =====
-var _originalShowWinModal = typeof showWinModal === 'function' ? showWinModal : null;
-
-function showWinModal() {
-  // ===== เช็คว่าสแกนครบหรือยัง =====
-  var scanned = JSON.parse(localStorage.getItem('scanned_booths') || '[]');
-
-  if (scanned.length < 10) {
-    // ยังไม่ครบ — ไม่ให้รับ
-    return;
-  }
-
-  // ===== เช็คว่าวันนี้รับไปแล้วหรือยัง =====
-  var today = new Date().toISOString().split('T');
-  var lastClaimed = localStorage.getItem('reward_claimed_date');
-
-  if (lastClaimed === today) {
-    document.getElementById('reward-pending').style.display = 'none';
-    document.getElementById('reward-claimed').style.display = 'block';
-
-    var t = localStorage.getItem('reward_claimed_time');
-    if (t) {
-      document.getElementById('claimed-time').textContent =
-        new Date(t).toLocaleString('th-TH');
-    }
-  } else {
-    document.getElementById('reward-pending').style.display = 'block';
-    document.getElementById('reward-claimed').style.display = 'none';
-  }
-
-  // แสดง modal
-  document.getElementById('winModal').classList.add('active');
-}
-
-// ══════════════════════════════
+// ═══════════════════════════
 // ADMIN
-// ══════════════════════════════
+// ═══════════════════════════
 const ADMIN_QR = "ADMIN_DEVPLAN_2026";
 const ADMIN_ID = "1040";
 
-// ══════════════════════════════
+// ═══════════════════════════
 // DATE SYSTEM
-// ══════════════════════════════
+// ═══════════════════════════
 function getTodayKey(){
   const now = new Date();
   const y = now.getFullYear();
@@ -1577,27 +1462,23 @@ function getTodayKey(){
   if(y===2026 && m===4 && d===18) return 'day18';
   return null;
 }
-
 const todayKey   = getTodayKey();
 const storageKey = todayKey ? `scannedBooths_${todayKey}` : 'scannedBooths_none';
 const rewardKey  = todayKey ? `rewardCode_${todayKey}`    : 'rewardCode_none';
-
 let scanned = JSON.parse(localStorage.getItem(storageKey)||'[]');
 
-// ══════════════════════════════
+// ═══════════════════════════
 // DATE LOCK
-// ══════════════════════════════
+// ═══════════════════════════
 function checkDate(){
   const now = new Date();
   const y = now.getFullYear();
   const m = now.getMonth();
   const d = now.getDate();
-
-  if(y===2026 && m===3 && (d===28||d===29)){
+  if(y===2026 && m===4 && (d===17||d===18)){
     document.getElementById('dateLock').classList.remove('show');
     return;
   }
-
   const lock      = document.getElementById('dateLock');
   const dlIcon    = document.getElementById('dlIcon');
   const dlTitle   = document.getElementById('dlTitle');
@@ -1605,18 +1486,15 @@ function checkDate(){
   const dlCurrent = document.getElementById('dlCurrent');
   const cdWrap    = document.getElementById('countdownWrap');
   const cdTimer   = document.getElementById('countdownTimer');
-
-  const thaiMonths=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+  const thaiMonths=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
+                    'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
   dlCurrent.textContent=`วันนี้: ${d} ${thaiMonths[m]} ${y+543}`;
-
-  const eventStart=new Date(2026,3,30,0,0,0); 
-
+  const eventStart=new Date(2026,4,17,0,0,0); // ✅ แก้ เดือน 4 = พฤษภาคม
   if(now<eventStart){
     dlIcon.textContent='🔒';
     dlTitle.textContent='ยังไม่ถึงวันงาน';
     dlSub.innerHTML='กิจกรรมนี้จัดขึ้นในวันที่<br><b style="color:#c9a96e">17 — 18 พฤษภาคม 2569</b>';
     cdWrap.style.display='block';
-
     function updateCountdown(){
       const diff=eventStart-new Date();
       if(diff<=0){location.reload();return;}
@@ -1636,34 +1514,29 @@ function checkDate(){
     dlSub.innerHTML='กิจกรรมสิ้นสุดแล้ว<br>ขอบคุณที่เข้าร่วมงาน 🙏';
     cdWrap.style.display='none';
   }
-
   lock.classList.add('show');
 }
-
 checkDate();
 setInterval(checkDate,60000);
 
-// ══════════════════════════════
+// ═══════════════════════════
 // ADMIN LOGIN
-// ══════════════════════════════
+// ═══════════════════════════
 function openAdminLogin(){
   document.getElementById('adminOverlay').classList.add('show');
   document.getElementById('adminInput').value='';
   document.getElementById('adminError').textContent='';
   setTimeout(()=>document.getElementById('adminInput').focus(),300);
 }
-
 function closeAdminLogin(){
   document.getElementById('adminOverlay').classList.remove('show');
   document.getElementById('adminInput').value='';
   document.getElementById('adminError').textContent='';
 }
-
 function confirmAdmin(){
   const input=document.getElementById('adminInput').value.trim();
   const error=document.getElementById('adminError');
   const sheet=document.getElementById('adminSheet');
-
   if(input===ADMIN_ID){
     closeAdminLogin();
     document.getElementById('dateLock').classList.remove('show');
@@ -1678,142 +1551,138 @@ function confirmAdmin(){
   }
 }
 
-
-// ══════════════════════════════
+// ═══════════════════════════
 // BOOTH DATA
-// ══════════════════════════════
+// ═══════════════════════════
 const booths=[
-  {id:"BOOTH_01",name:"Plan Your Glam",         icon:"💄",img:"Team/Plan Your Glam.jpg",         grad:"linear-gradient(160deg,#3d1a2e 0%,#1a0d16 100%)"},
-  {id:"BOOTH_02",name:"Behind Her Wall",         icon:"🧱",img:"Team/Behind Her Wall.jpg",        grad:"linear-gradient(160deg,#1a2d3d 0%,#0d1520 100%)"},
-  {id:"BOOTH_03",name:"Price's Up",              icon:"📈",img:"Team/Price s Up.jpg",             grad:"linear-gradient(160deg,#3d2a1a 0%,#201508 100%)"},
-  {id:"BOOTH_04",name:"Chanrong Plan",           icon:"🐝",img:"Team/Chanrong Plan.jpg",          grad:"linear-gradient(160deg,#2d3a1a 0%,#161d08 100%)"},
-  {id:"BOOTH_05",name:"Left4Debt",               icon:"💀",img:"Team/Left4Debt.jpg",              grad:"linear-gradient(160deg,#2d1a1a 0%,#180808 100%)"},
-  {id:"BOOTH_06",name:"Sukhumvit Thaicoon",      icon:"🎲",img:"Team/Sukhumvit Thaicoon.jpg",     grad:"linear-gradient(160deg,#1a3d2d 0%,#081e15 100%)"},
-  {id:"BOOTH_07",name:"Inside Intern",           icon:"💼",img:"Team/Inside Intern.jpg",          grad:"linear-gradient(160deg,#2a1a3d 0%,#140a20 100%)"},
-  {id:"BOOTH_08",name:"Mulakaa",                 icon:"💎",img:"Team/Mulakaa.jpg",                grad:"linear-gradient(160deg,#3d2d1a 0%,#1e1608 100%)"},
-  {id:"BOOTH_09",name:"Hoop from Trash to Trend",icon:"♻️",img:"Team/Hoop from Trash to Trend.jpg",grad:"linear-gradient(160deg,#1a2d3d 0%,#081420 100%)"},
-  {id:"BOOTH_10",name:"moneymood",               icon:"💰",img:"Team/moneymood.jpg",              grad:"linear-gradient(160deg,#2a3d1a 0%,#131e08 100%)"},
+  {id:"BOOTH_01",name:"Plan Your Glam",          icon:"💄",img:"Team/Plan Your Glam.jpg",          grad:"linear-gradient(160deg,#3d1a2e 0%,#1a0d16 100%)"},
+  {id:"BOOTH_02",name:"Behind Her Wall",          icon:"🧱",img:"Team/Behind Her Wall.jpg",         grad:"linear-gradient(160deg,#1a2d3d 0%,#0d1520 100%)"},
+  {id:"BOOTH_03",name:"Price's Up",               icon:"📈",img:"Team/Price s Up.jpg",              grad:"linear-gradient(160deg,#3d2a1a 0%,#201508 100%)"},
+  {id:"BOOTH_04",name:"Chanrong Plan",            icon:"🐝",img:"Team/Chanrong Plan.jpg",           grad:"linear-gradient(160deg,#2d3a1a 0%,#161d08 100%)"},
+  {id:"BOOTH_05",name:"Left4Debt",                icon:"💀",img:"Team/Left4Debt.jpg",               grad:"linear-gradient(160deg,#2d1a1a 0%,#180808 100%)"},
+  {id:"BOOTH_06",name:"Sukhumvit Thaicoon",       icon:"🎲",img:"Team/Sukhumvit Thaicoon.jpg",      grad:"linear-gradient(160deg,#1a3d2d 0%,#081e15 100%)"},
+  {id:"BOOTH_07",name:"Inside Intern",            icon:"💼",img:"Team/Inside Intern.jpg",           grad:"linear-gradient(160deg,#2a1a3d 0%,#140a20 100%)"},
+  {id:"BOOTH_08",name:"Mulakaa",                  icon:"💎",img:"Team/Mulakaa.jpg",                 grad:"linear-gradient(160deg,#3d2d1a 0%,#1e1608 100%)"},
+  {id:"BOOTH_09",name:"Hoop from Trash to Trend", icon:"♻️",img:"Team/Hoop from Trash to Trend.jpg",grad:"linear-gradient(160deg,#1a2d3d 0%,#081420 100%)"},
+  {id:"BOOTH_10",name:"moneymood",                icon:"💰",img:"Team/moneymood.jpg",               grad:"linear-gradient(160deg,#2a3d1a 0%,#131e08 100%)"},
 ];
 
-// ══════════════════════════════
-// ✅ MEMBER DATA — อยู่ข้างนอก
-// ══════════════════════════════
+// ═══════════════════════════
+// MEMBER DATA
+// ═══════════════════════════
 const boothMembers = {
   'BOOTH_01': [
-    { name: 'ชื่อสมาชิก 1', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 2', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 3', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 4', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 5', ig: 'ig_username' }
+    { name: 'Jaru Khaoborisut', ig: 'juuliekawaii' },
+    { name: 'Naiparporn Treejaroenwattanakul ', ig: ' kikhoonn' },
+    { name: 'Pichyapha Trichanphen', ig: 'pichaapar' },
+    { name: 'Salin Supasiwakul', ig: 'miiniesln_' },
+    { name: 'Hathaiphat Sripiboonpanich', ig: 'hathaipat.tt ' }
   ],
   'BOOTH_02': [
-    { name: 'ชื่อสมาชิก 1', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 2', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 3', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 4', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 5', ig: 'ig_username' }
+    { name: 'Manthita Sukpattananarakul', ig: 'mew_mewm' },
+    { name: 'Chermika Thomkhonburi', ig: 'chermisun_flow' },
+    { name: 'Kodchakorn Apitanavit', ig: 'beyorzen' },
+    { name: 'Phantila Meoundej', ig: 'mutechatห' },
+    { name: 'Suputtra Nilwong', ig: '5upu1z11' }
   ],
   'BOOTH_03': [
-    { name: 'ชื่อสมาชิก 1', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 2', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 3', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 4', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 5', ig: 'ig_username' }
+    { name: 'Papitchaya Rasarugse ', ig: 'papitpear' },
+    { name: 'Varinthorn Visedthorn', ig: 'cantavarin' },
+    { name: 'Napasorn Anusuwan', ig: 'np.ployyq' },
+    { name: 'Pamika Intawong', ig: 'amypamika' },
+    { name: 'Peeraya Thongthang', ig: 'yyorlors' }
   ],
   'BOOTH_04': [
-    { name: 'Sippapas (M)', ig: 'dempororxyz' },
-    { name: 'Nonthawat (Best)', ig: 'beststylsn' },
-    { name: 'Voranate (Nut)', ig: 'voranate_' },
-    { name: 'Natchanon (Oat)', ig: 'ncn_oat' },
-    { name: 'Natapong (Palm)', ig: 'palm_ntp' }
+    { name: 'Sippapas (M)',      ig: 'demperorxyz' },
+    { name: 'Nonthawat (Best)',  ig: 'beststylsn'  },
+    { name: 'Voranate (Nut)',    ig: 'voranate_'   },
+    { name: 'Natchanon (Oat)',   ig: 'ncn_oat'     },
+    { name: 'Natapong (Palm)',   ig: 'palm_ntp'    }
   ],
   'BOOTH_05': [
-    { name: 'ชื่อสมาชิก 1', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 2', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 3', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 4', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 5', ig: 'ig_username' }
+    { name: 'Papitchaya Pinkhiew', ig: 'modpitchayaa' },
+    { name: 'Kanis Pruksaplasai', ig: 'perttrep' },
+    { name: 'Natthanan  Ruengpiyasaree', ig: 'xinxnr' },
+    { name: 'Pitiphum Picheinpong', ig: 'm.ing_pp' },
+    { name: 'Suppasit Jitchalam', ig: 'Teleptelepp' }
   ],
   'BOOTH_06': [
-    { name: 'ชื่อสมาชิก 1', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 2', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 3', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 4', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 5', ig: 'ig_username' }
+    { name: 'Bannaporn Duangdee', ig: 'nnoina.a' },
+    { name: 'Wasita kaewmit', ig: 'wasita_kk' },
+    { name: 'Phakyada Leeworakant', ig: 'Unnyyaa_' },
+    { name: 'Nawaporn Kosayanon', ig: 'kkhaowfangs' },
+    { name: 'Pattaradanai Phetdee', ig: 'pattarada9' }
   ],
   'BOOTH_07': [
-    { name: 'ชื่อสมาชิก 1', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 2', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 3', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 4', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 5', ig: 'ig_username' }
+    { name: 'Puttida Lakananuruk', ig: 'jjaatida' },
+    { name: 'Phummin Rueangsri', ig: 'jettphummin' },
+    { name: 'Romnalin Warin', ig: 'plengrom' },
+    { name: 'Piyapat Tongngam', ig: 'aangangchrr' },
+    { name: 'Anchidta Tanetsakul', ig: 'jinnyjean.j' }
   ],
   'BOOTH_08': [
-    { name: 'ชื่อสมาชิก 1', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 2', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 3', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 4', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 5', ig: 'ig_username' }
+    { name: 'Chanikarn toobchot', ig: 'mookccnk' },
+    { name: 'Pornnapat Suprakarn', ig: 'aaunpnp' },
+    { name: 'Nda Jamsai', ig: 'eveemns_' },
+    { name: 'Phimmada Paesomboon', ig: 'primms_ps' },
+    { name: 'Nattawee Chewpattayakon', ig: 'q_straydog' }
   ],
   'BOOTH_09': [
-    { name: 'ชื่อสมาชิก 1', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 2', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 3', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 4', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 5', ig: 'ig_username' }
+    { name: 'Praewrung Mingmungmee', ig: 'pharawwe' },
+    { name: 'Chanikarn Mankwamdee', ig: 'milddcnk' },
+    { name: 'Thanatorn Silapaphakdee', ig: 'sskys_' },
+    { name: 'Pornnatcha  Damrongpante', ig: 'dewdpnc' },
+    { name: 'Dara Sritummanusarn', ig: 'toondara' }
   ],
   'BOOTH_10': [
-    { name: 'ชื่อสมาชิก 1', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 2', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 3', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 4', ig: 'ig_username' },
-    { name: 'ชื่อสมาชิก 5', ig: 'ig_username' }
+    { name: 'Warapa Phakdeejitti', ig: 'nnineess' },
+    { name: 'Tormai Supaket', ig: '02maii_' },
+    { name: 'Piyatida Pisutthirudkul', ig: 'mo_papr_' },
+    { name: 'Laphat Ying-in', ig: 'noey_laphat' },
+    { name: 'Laksika Lapmanee', ig: 'lluckylskk' }
   ]
 };
 
-let html5QrCode=null,scannerOpen=false;
+let html5QrCode = null, scannerOpen = false;
 
-// ✅ Event Delegation — ผูก 1 ครั้ง ไม่ถูก innerHTML ทับ
+// ═══════════════════════════
+// ✅ EVENT DELEGATION
+// ═══════════════════════════
 document.addEventListener('click', function(e) {
   var card = e.target.closest('.booth-card.scanned');
   if (!card) return;
   if (card.classList.contains('reward-card')) return;
-
   var grid = document.getElementById('boothGrid');
   if (!grid) return;
-
   var cards = grid.querySelectorAll('.booth-card:not(.reward-card)');
   for (var idx = 0; idx < cards.length; idx++) {
     if (cards[idx] === card) {
       var b = booths[idx];
-      if (b) {
-        showMemberModal(b.id, b.name, idx + 1);
-      }
+      if (b) showMemberModal(b.id, b.name, idx + 1);
       break;
     }
   }
 });
 
-function init(){ renderGrid(); updateProgress(); }
+// ═══════════════════════════
+// INIT & RENDER
+// ═══════════════════════════
+function init() { renderGrid(); updateProgress(); }
 
-function renderGrid(){
-  const grid=document.getElementById('boothGrid');
-  grid.innerHTML='';
-  const allDone=scanned.length>=10;
-
-  // ===== สร้างการ์ดบูธ =====
+function renderGrid() {
+  const grid = document.getElementById('boothGrid');
+  grid.innerHTML = '';
+  const allDone = scanned.length >= 10;
   booths.forEach((b, i) => {
     const done = scanned.includes(b.id);
     const card = document.createElement('div');
     card.className = `booth-card ${done ? 'scanned' : 'unscanned'}`;
-
     const bgStyle = b.img
       ? `background:url('${b.img}') center/cover no-repeat`
       : `background:${b.grad}`;
     const filterStyle = done
       ? 'filter:none;transform:scale(1)'
       : 'filter:grayscale(100%) blur(4px) brightness(0.6);transform:scale(1.08)';
-
     card.innerHTML = `
       <div class="card-bg" style="${bgStyle};position:absolute;inset:0;${filterStyle};transition:filter 0.7s ease,transform 0.7s ease;"></div>
       <div class="card-overlay"></div>
@@ -1831,94 +1700,56 @@ function renderGrid(){
         </div>
       </div>
     `;
-
-    // ไม่ต้องมี onclick ตรงนี้ — ใช้ Event Delegation ข้างบนแทน
     grid.appendChild(card);
-  });  function showMemberModal(boothId) {
-    const booth = booths.find(b => b.id === boothId);
-    if (!booth) return;
-  
-    document.getElementById('memberBoothNum').textContent = `Exhibit No.${String(booths.indexOf(booth)+1).padStart(2,'0')}`;
-    document.getElementById('memberBoothName').textContent = booth.name;
-  
-    const memberList = document.getElementById('memberList');
-    memberList.innerHTML = '';
-    booth.members.forEach(member => {
-      const li = document.createElement('li');
-      li.textContent = member;
-      memberList.appendChild(li);
-    });
-  
-    showModal('memberModal');
-  }
- 
-// ===== Card 11 =====
-const r = document.createElement('div');
-var today = new Date().toISOString().split('T');  // ✅ แก้ เพิ่ม 
-var rewardClaimed = localStorage.getItem('reward_claimed_date') === today;
-r.className = `reward-card ${rewardClaimed ? 'claimed' : allDone ? 'unlocked' : 'locked'}`;
-if (allDone && !rewardClaimed) r.onclick = showWinModal;
-let dots = '';
-for (let i = 0; i < 10; i++) dots += `<div class="mdot ${i < scanned.length ? 'on' : ''}"></div>`;
-r.innerHTML = `
-  <div class="r-locked">
-    <div class="q-spin-wrap"><div class="q-spin">?</div></div>
-    <div class="r-lock-title">Special Exhibition</div>
-    <div class="r-lock-sub">เยี่ยมชมครบทุกบูธ<br>เพื่อปลดล็อค</div>
-    <div class="mini-dots">${dots}</div>
-    <div class="r-prog-text">${scanned.length} of 10 visited</div>
-  </div>
-  <div class="r-unlocked">
-    <div class="r-trophy">🏆</div>
-    <div class="r-title">The Grand Prize</div>
-    <div class="r-sub">เยี่ยมชมครบแล้ว<br>แตะเพื่อรับรางวัล</div>
-    <button class="r-btn" onclick="event.stopPropagation();showWinModal()">🎁 รับรางวัล</button>
-  </div>
-  <div class="r-claimed">
-    <div class="r-trophy">✅</div>
-    <div class="r-title" style="background:linear-gradient(135deg,#2ecc71,#27ae60,#58d68d);-webkit-background-clip:text;-webkit-text-fill-color:transparent">รับรางวัลแล้ว</div>
-    <div class="r-sub">ขอบคุณที่ร่วมกิจกรรม!<br>Coexist · COSCI</div>
-  </div>
-`;
-grid.appendChild(r);
+  });
+
+  // ===== Card 11 — Reward =====
+  const r = document.createElement('div');
+  var today = new Date().toISOString().split('T'); // ✅ แก้ เพิ่ม 
+  var rewardClaimed = localStorage.getItem('reward_claimed_date') === today;
+  r.className = `reward-card ${rewardClaimed ? 'claimed' : allDone ? 'unlocked' : 'locked'}`;
+  if (allDone && !rewardClaimed) r.onclick = showWinModal;
+  let dots = '';
+  for (let i = 0; i < 10; i++) dots += `<div class="mdot ${i < scanned.length ? 'on' : ''}"></div>`;
+  r.innerHTML = `
+    <div class="r-locked">
+      <div class="q-spin-wrap"><div class="q-spin">?</div></div>
+      <div class="r-lock-title">Special Exhibition</div>
+      <div class="r-lock-sub">เยี่ยมชมครบทุกบูธ<br>เพื่อปลดล็อค</div>
+      <div class="mini-dots">${dots}</div>
+      <div class="r-prog-text">${scanned.length} of 10 visited</div>
+    </div>
+    <div class="r-unlocked">
+      <div class="r-trophy">🏆</div>
+      <div class="r-title">The Grand Prize</div>
+      <div class="r-sub">เยี่ยมชมครบแล้ว<br>แตะเพื่อรับรางวัล</div>
+      <button class="r-btn" onclick="event.stopPropagation();showWinModal()">🎁 รับรางวัล</button>
+    </div>
+    <div class="r-claimed">
+      <div class="r-trophy">✅</div>
+      <div class="r-title" style="background:linear-gradient(135deg,#2ecc71,#27ae60,#58d68d);-webkit-background-clip:text;-webkit-text-fill-color:transparent">รับรางวัลแล้ว</div>
+      <div class="r-sub">ขอบคุณที่ร่วมกิจกรรม!<br>Coexist · COSCI</div>
+    </div>
+  `;
+  grid.appendChild(r);
 }
-// ===== แสดง Member Modal =====
+
+// ═══════════════════════════
+// ✅ showMemberModal
+// ═══════════════════════════
 function showMemberModal(boothId, boothName, boothNum) {
   try {
-    // ===== สร้าง modal ถ้ายังไม่มี =====
-    if (!document.getElementById('memberModal')) {
-      var div = document.createElement('div');
-      div.className = 'modal-overlay';
-      div.id = 'memberModal';
-      div.innerHTML =
-        '<div class="sheet member-sheet">' +
-          '<div class="handle"></div>' +
-          '<div class="member-header">' +
-            '<div class="member-booth-num" id="memberBoothNum"></div>' +
-            '<div class="member-booth-name" id="memberBoothName"></div>' +
-            '<div class="member-divider"><span>✦</span></div>' +
-            '<div class="member-label">Team Members</div>' +
-          '</div>' +
-          '<div class="member-list" id="memberList"></div>' +
-          '<button class="s-btn member-close-btn" onclick="closeModal(\'memberModal\')">ปิด</button>' +
-        '</div>';
-      document.body.appendChild(div);
-    }
-
-    // ===== ใส่ข้อมูลหัว =====
+    var modal = document.getElementById('memberModal');
+    if (!modal) return;
     document.getElementById('memberBoothNum').textContent =
       'Exhibit No.' + String(boothNum).padStart(2, '0');
     document.getElementById('memberBoothName').textContent = boothName;
-
-    // ===== ดึงข้อมูลสมาชิก =====
     var members = [];
     if (typeof boothMembers !== 'undefined' && boothMembers[boothId]) {
       members = boothMembers[boothId];
     }
-
     var listEl = document.getElementById('memberList');
     listEl.innerHTML = '';
-
     if (members.length === 0) {
       listEl.innerHTML = '<div class="member-empty">ไม่มีข้อมูลสมาชิก</div>';
     } else {
@@ -1926,10 +1757,10 @@ function showMemberModal(boothId, boothName, boothNum) {
       for (var idx = 0; idx < members.length; idx++) {
         var m = members[idx];
         var initial = m.name.charAt(0).toUpperCase();
-        var card = document.createElement('div');
-        card.className = 'member-card';
-        card.style.animationDelay = (idx * 0.08) + 's';
-        card.innerHTML =
+        var memberCard = document.createElement('div');
+        memberCard.className = 'member-card';
+        memberCard.style.animationDelay = (idx * 0.08) + 's';
+        memberCard.innerHTML =
           '<div class="member-avatar" style="background:' + colors[idx % 5] + '">' +
             '<span>' + initial + '</span>' +
           '</div>' +
@@ -1939,13 +1770,10 @@ function showMemberModal(boothId, boothName, boothNum) {
               '📷 @' + m.ig +
             '</a>' +
           '</div>';
-        listEl.appendChild(card);
+        listEl.appendChild(memberCard);
       }
     }
-
-    // ===== แสดง modal =====
-    document.getElementById('memberModal').classList.add('show');
-
+    modal.classList.add('show');
   } catch (e) {
     alert('Error: ' + e.message);
   }
@@ -1959,6 +1787,7 @@ function updateCard11() {
     card.onclick = null;
   }
 }
+
 // ===== Modal =====
 function showModal(id) { document.getElementById(id).classList.add('show'); }
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
@@ -1969,6 +1798,7 @@ function updateProgress() {
   document.getElementById('scanCount').textContent = n;
   document.getElementById('progressBar').style.width = (n / 10 * 100) + '%';
 }
+
 // ===== Scanner =====
 function openScanner() {
   document.getElementById('scannerOverlay').classList.add('show');
@@ -1982,6 +1812,7 @@ function openScanner() {
   ).catch(function() { alert('ไม่สามารถเปิดกล้องได้'); closeScanner(); });
   scannerOpen = true;
 }
+
 function closeScanner() {
   document.getElementById('scannerOverlay').classList.remove('show');
   document.getElementById('mainScanBtn').classList.remove('active');
@@ -1991,6 +1822,7 @@ function closeScanner() {
   }
   scannerOpen = false;
 }
+
 // ===== Scan Success =====
 function onScanSuccess(text) {
   closeScanner();
@@ -2018,10 +1850,11 @@ function onScanSuccess(text) {
     showModal('successModal');
   }
 }
-// ===== Win Modal — เช็คครบ 10 + วันละครั้ง =====
+
+// ===== Win Modal =====
 function showWinModal() {
   if (scanned.length < 10) return;
-  var today = new Date().toISOString().split('T');  // ✅ แก้แล้ว 
+  var today = new Date().toISOString().split('T'); // ✅ แก้ เพิ่ม 
   var lastClaimed = localStorage.getItem('reward_claimed_date');
   if (lastClaimed === today) {
     document.getElementById('reward-pending').style.display = 'none';
@@ -2043,13 +1876,14 @@ function showWinModal() {
   document.getElementById('couponCode').textContent = code;
   showModal('winModal');
 }
-// ===== Claim Reward — วันละครั้ง =====
+
+// ===== Claim Reward =====
 function claimReward() {
   if (scanned.length < 10) {
     alert('กรุณาสแกนให้ครบ 10 บูธก่อน');
     return;
   }
-  var today = new Date().toISOString().split('T');  // ✅ แก้แล้ว 
+  var today = new Date().toISOString().split('T'); // ✅ แก้ เพิ่ม 
   var lastClaimed = localStorage.getItem('reward_claimed_date');
   if (lastClaimed === today) {
     document.getElementById('reward-pending').style.display = 'none';
@@ -2058,7 +1892,7 @@ function claimReward() {
   }
   var now = new Date().toISOString();
   localStorage.setItem('reward_claimed', 'true');
-  localStorage.setItem('reward_claimed_date', today);
+  localStorage.setItem('reward_claimed_date', today); // ✅ เก็บ string ถูกต้อง
   localStorage.setItem('reward_claimed_time', now);
   document.getElementById('reward-pending').style.display = 'none';
   document.getElementById('reward-claimed').style.display = 'block';
@@ -2066,9 +1900,6 @@ function claimReward() {
     new Date(now).toLocaleString('th-TH');
   updateCard11();
 }
-
-
-
 
 init();
 </script>
