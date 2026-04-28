@@ -92,5 +92,7 @@ def get_allUsers():
             "status":"error",
             "message":str(e)
         }),500
+    
 if __name__ =='__main__':
-    app.run(debug=True,port=PORT)
+    is_debug = os.getenv("FLASK_DEBUG", "False").lower() in ("true", "1", "t")
+    app.run(debug=is_debug,port=PORT)
