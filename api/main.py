@@ -9,6 +9,11 @@ load_dotenv()
 PORT=os.getenv("PY_PORT")
 app=Flask(__name__)
 CORS(app)
+
+from adminlogin import admin_api
+#ADMIN_login api
+app.register_blueprint(admin_api, url_prefix="/api/admin")
+
 #dbconect
 def get_db():
     conn =mysql.connector.connect(
@@ -21,8 +26,11 @@ def get_db():
 
 #Get_IP
 def get_client_ip():
-    if request.headers.get("X-Forwarded-for").split(","):
-        return request.remote_addr
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        # X-Forwarded-For อาจส่งมาหลาย IP ให้เอาตัวแรกสุด
+        return forwarded.split(",")[0].strip()
+    return request.remote_addr
 
 #API สมาชิกของแต่ละบูท
 @app.route("/api/members/<int:booth_id>", methods=["GET"])
@@ -92,7 +100,8 @@ def get_allUsers():
             "status":"error",
             "message":str(e)
         }),500
-    
+
+
 if __name__ =='__main__':
     is_debug = os.getenv("FLASK_DEBUG", "False").lower() in ("true", "1", "t")
     app.run(debug=is_debug,port=PORT)
