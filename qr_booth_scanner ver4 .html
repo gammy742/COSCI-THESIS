@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Development Plan — Museum</title>
+<script src="https://unpkg.com/html5-qrcode"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+
+
+
+  /* ==========================================
+   REWARD CLAIMED — UI
+   ========================================== */
+
+/* ===== Animated Checkmark ===== */
+.claimed-check-circle {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 16px;
+  animation: claimedPop 0.5s cubic-bezier(0.17, 0.89, 0.32, 1.28) forwards;
+}
+
+.claimed-check-svg {
+  width: 72px;
+  height: 72px;
+}
+
+.claimed-check-bg {
+  fill: none;
+  stroke: #2ecc71;
+  stroke-width: 2;
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  animation: claimedCircle 0.6s 0.2s ease forwards;
+}
+
+.claimed-check-mark {
+  stroke: #2ecc71;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: claimedTick 0.4s 0.7s ease forwards;
+}
+
+@keyframes claimedCircle {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes claimedTick {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes claimedPop {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+
+
+/* ===== Title ===== */
+.claimed-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #2ecc71, #27ae60, #58d68d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200%;
+  animation: claimedShine 3s ease infinite;
+  margin-bottom: 6px;
+}
+
+@keyframes claimedShine {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.claimed-subtitle {
+  font-size: 0.85rem;
+  color: #999;
+  margin-bottom: 12px;
+}
+
+/* ===== Divider ===== */
+.claimed-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0;
+}
+.claimed-divider::before,
+.claimed-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #333, transparent);
+}
+.claimed-divider span {
+  color: #2ecc71;
+  font-size: 10px;
+}
+
+/* ===== Event Badge ===== */
+.claimed-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(46, 204, 113, 0.08);
+  border: 1px solid rgba(46, 204, 113, 0.15);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin: 14px 0;
+}
+
+.claimed-badge-icon {
+  font-size: 1.6rem;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(46, 204, 113, 0.12);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.claimed-badge-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #eee;
+}
+.claimed-badge-sub {
+  font-size: 0.7rem;
+  color: #777;
+  margin-top: 2px;
+}
+
+/* ===== Stamp ===== */
+.claimed-stamp {
+  margin: 16px auto;
+  width: fit-content;
+  animation: claimedStampIn 0.4s 0.9s cubic-bezier(0.17, 0.89, 0.32, 1.28) both;
+}
+
+.claimed-stamp-inner {
+  border: 2px solid rgba(46, 204, 113, 0.4);
+  border-radius: 8px;
+  padding: 8px 20px;
+  transform: rotate(-3deg);
+  position: relative;
+}
+
+.claimed-stamp-inner::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1px dashed rgba(46, 204, 113, 0.25);
+  border-radius: 5px;
+}
+
+.claimed-stamp-text {
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 4px;
+  color: #2ecc71;
+  text-transform: uppercase;
+}
+
+.claimed-stamp-date {
+  font-size: 0.6rem;
+  color: #666;
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+
+@keyframes claimedStampIn {
+  0% { transform: scale(2) rotate(10deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* ===== Confetti ===== */
+.claimed-confetti {
+  position: relative;
+  height: 20px;
+  margin: 10px 0;
+  overflow: visible;
+}
+
+.claimed-confetti span {
+  position: absolute;
+  font-size: 10px;
+  color: #2ecc71;
+  opacity: 0;
+  animation: claimedFloat 2s calc(var(--i) * 0.2s + 1s) ease forwards;
+}
+.claimed-confetti span:nth-child(1) { left: 10%; color: #2ecc71; }
+.claimed-confetti span:nth-child(2) { left: 30%; color: #c9a96e; }
+.claimed-confetti span:nth-child(3) { left: 50%; color: #667eea; }
+.claimed-confetti span:nth-child(4) { left: 70%; color: #e8cc99; }
+.claimed-confetti span:nth-child(5) { left: 90%; color: #2ecc71; }
+
+@keyframes claimedFloat {
+  0% { transform: translateY(0) scale(0); opacity: 0; }
+  30% { opacity: 1; transform: translateY(-15px) scale(1.2); }
+  100% { opacity: 0; transform: translateY(-30px) scale(0.8); }
+}
+
+/* ===== Done Button ===== */
+.claimed-done-btn {
+  margin-top: 16px;
+  background: linear-gradient(135deg, #27ae60, #2ecc71) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.claimed-done-btn::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+  transform: rotate(45deg);
+  animation: claimedBtnShine 3s ease infinite;
+}
+
+@keyframes claimedBtnShine {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  30%, 100% { transform: translateX(100%) rotate(45deg); }
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+body{
+  font-family:'Times New Roman',Times,serif;
+  min-height:100vh;
+  color:#f0e6d3;
+  overflow-x:hidden;
+  position:relative;
+}
+
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse at 20% 0%,#2a1f0e 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 0%,#1a1208 0%,transparent 50%),
+    radial-gradient(ellipse at 50% 100%,#0d0a05 0%,transparent 60%),
+    linear-gradient(180deg,#1c1408 0%,#120e06 40%,#0a0805 100%);
+  z-index:0;
+}
+body::after{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23c9a96e' fill-opacity='0.04'%3E%3Cpath d='M40 0C35 10 25 10 20 20c5-2 15 2 20 0c5 2 15-2 20 0C55 10 45 10 40 0Z'/%3E%3Cpath d='M40 80C35 70 25 70 20 60c5 2 15-2 20 0c5-2 15 2 20 0C55 70 45 70 40 80Z'/%3E%3Ccircle cx='40' cy='40' r='3'/%3E%3C/g%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;
+}
+
+.museum-bg{position:fixed;inset:0;z-index:0;overflow:hidden}
+.museum-bg::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    repeating-linear-gradient(0deg,transparent,transparent 80px,rgba(201,169,110,0.03) 80px,rgba(201,169,110,0.03) 81px),
+    repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(201,169,110,0.03) 80px,rgba(201,169,110,0.03) 81px);
+}
+
+.vignette{
+  position:fixed;inset:0;
+  background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,0.7) 100%);
+  z-index:1;pointer-events:none;
+}
+.light-beam{
+  position:fixed;top:0;left:50%;transform:translateX(-50%);
+  width:300px;height:400px;
+  background:radial-gradient(ellipse at top,rgba(201,169,110,0.06) 0%,transparent 70%);
+  z-index:1;pointer-events:none;
+}
+
+.museum-frame-top{
+  position:fixed;top:0;left:0;right:0;height:6px;
+  background:linear-gradient(90deg,transparent 0%,rgba(201,169,110,0.2) 10%,rgba(201,169,110,0.6) 30%,rgba(232,204,153,0.8) 50%,rgba(201,169,110,0.6) 70%,rgba(201,169,110,0.2) 90%,transparent 100%);
+  z-index:10;
+}
+.museum-frame-bottom{
+  position:fixed;bottom:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,transparent 0%,rgba(201,169,110,0.3) 20%,rgba(201,169,110,0.5) 50%,rgba(201,169,110,0.3) 80%,transparent 100%);
+  z-index:10;
+}
+
+.corner-ornament{position:fixed;width:60px;height:60px;z-index:10;opacity:0.35}
+.corner-ornament svg{width:100%;height:100%}
+.co-tl{top:8px;left:8px}
+.co-tr{top:8px;right:8px;transform:scaleX(-1)}
+.co-bl{bottom:8px;left:8px;transform:scaleY(-1)}
+.co-br{bottom:8px;right:8px;transform:scale(-1,-1)}
+
+.container{
+  position:relative;z-index:2;
+  max-width:430px;margin:0 auto;
+  padding:0 18px 150px;
+}
+
+/* HEADER */
+.header{padding:52px 0 28px;text-align:center;position:relative}
+.header-line{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.header-line::before,.header-line::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,169,110,0.5),transparent);
+}
+.header-diamond{width:6px;height:6px;background:#c9a96e;transform:rotate(45deg);opacity:0.7}
+.museum-label{
+  font-family:'Times New Roman',Times,serif;
+  font-size:0.7rem;letter-spacing:4px;
+  color:rgba(201,169,110,0.6);
+  text-transform:uppercase;margin-bottom:8px;
+}
+
+.title-main{
+  font-family:'Times New Roman',Times,serif;
+  font-size:2.4rem;font-weight:900;
+  line-height:1;letter-spacing:2px;
+  display:flex;align-items:baseline;
+  justify-content:center;gap:0;
+}
+.title-co{
+  font-family:'Times New Roman',Times,serif;
+  font-weight:900;font-style:normal;color:#ffffff;
+  text-shadow:0 0 40px rgba(255,255,255,0.15),0 2px 4px rgba(0,0,0,0.5);
+}
+.title-exist{
+  font-family:'Times New Roman',Times,serif;
+  font-weight:400;font-style:italic;font-size:2.6rem;
+  color:rgba(232,204,153,0.85);letter-spacing:1px;
+  text-shadow:0 0 30px rgba(201,169,110,0.3);
+}
+.title-separator{
+  font-family:'Times New Roman',Times,serif;
+  font-weight:300;font-size:1.5rem;
+  color:rgba(201,169,110,0.4);
+  margin:0 6px;align-self:center;
+}
+.title-cosci{
+  font-family:'Times New Roman',Times,serif;
+  font-weight:900;font-style:normal;font-size:2.4rem;
+  letter-spacing:6px;
+  background:linear-gradient(180deg,#e8cc99 0%,#c9a96e 30%,#f5e6c0 50%,#c9a96e 70%,#8B6914 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+  position:relative;
+}
+.title-cosci::after{
+  content:'';position:absolute;bottom:-6px;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,169,110,0.6),rgba(232,204,153,0.9),rgba(201,169,110,0.6),transparent);
+}
+
+.title-sub{
+  font-family:'Times New Roman',Times,serif;
+  font-size:1.4rem;font-style:italic;
+  color:#c9a96e;margin-top:4px;letter-spacing:1px;
+}
+.header-tagline{
+  font-family:'Times New Roman',Times,serif;
+  font-size:0.8rem;letter-spacing:3px;
+  color:rgba(201,169,110,0.45);
+  text-transform:uppercase;margin-top:10px;
+}
+.header-ornament{
+  display:flex;align-items:center;justify-content:center;
+  gap:8px;margin-top:14px;
+}
+.orn-line{width:60px;height:1px;background:linear-gradient(90deg,transparent,rgba(201,169,110,0.4))}
+.orn-line.r{background:linear-gradient(90deg,rgba(201,169,110,0.4),transparent)}
+.orn-center{font-size:0.7rem;color:rgba(201,169,110,0.5)}
+
+/* PROGRESS */
+.progress-section{
+  margin:8px 0 28px;
+  background:rgba(201,169,110,0.04);
+  border:1px solid rgba(201,169,110,0.12);
+  border-radius:16px;padding:20px 22px;
+  position:relative;overflow:hidden;
+}
+.progress-section::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,169,110,0.3),transparent);
+}
+.prog-label-top{
+  font-family:'Times New Roman',Times,serif;
+  font-size:0.72rem;letter-spacing:3px;
+  color:rgba(201,169,110,0.5);
+  text-transform:uppercase;margin-bottom:10px;
+}
+.prog-row{display:flex;align-items:baseline;gap:8px;margin-bottom:14px}
+.prog-num{
+  font-family:'Times New Roman',Times,serif;
+  font-size:3.8rem;font-weight:700;color:#fff;line-height:1;
+  transition:all 0.5s;text-shadow:0 0 30px rgba(201,169,110,0.3);
+}
+.prog-sep{font-size:1.5rem;color:#333;font-weight:300}
+.prog-total{font-size:1.5rem;color:#555;font-weight:300}
+.prog-unit{
+  font-family:'Times New Roman',Times,serif;
+  font-size:0.85rem;color:#666;margin-left:4px;font-style:italic;
+}
+.prog-track{height:3px;background:rgba(255,255,255,0.04);border-radius:2px;overflow:hidden}
+.prog-fill{
+  height:100%;
+  background:linear-gradient(90deg,#8B6914,#c9a96e,#e8cc99,#c9a96e);
+  background-size:200% 100%;
+  border-radius:2px;
+  transition:width 0.8s cubic-bezier(0.4,0,0.2,1);
+  width:0%;
+  animation:goldShimmer 3s ease-in-out infinite;
+  box-shadow:0 0 8px rgba(201,169,110,0.4);
+}
+@keyframes goldShimmer{
+  0%{background-position:200% 0}100%{background-position:-200% 0}
+}
+
+.section-title{
+  display:flex;align-items:center;gap:12px;margin-bottom:16px;
+}
+.section-title::before,.section-title::after{
+  content:'';flex:1;height:1px;background:rgba(201,169,110,0.15);
+}
+.section-title span{
+  font-family:'Times New Roman',Times,serif;
+  font-size:0.72rem;letter-spacing:3px;
+  color:rgba(201,169,110,0.4);
+  text-transform:uppercase;white-space:nowrap;
+}
+
+/* GRID */
+.booth-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.booth-card{
+  border-radius:4px;overflow:hidden;
+  position:relative;aspect-ratio:3/4;
+  transition:transform 0.4s cubic-bezier(0.4,0,0.2,1),box-shadow 0.4s;
+  cursor:default;
+}
+.booth-card::before{
+  content:'';position:absolute;inset:-1px;border-radius:5px;
+  background:linear-gradient(145deg,rgba(201,169,110,0.5) 0%,rgba(120,90,30,0.3) 25%,rgba(201,169,110,0.1) 50%,rgba(120,90,30,0.3) 75%,rgba(201,169,110,0.5) 100%);
+  z-index:6;pointer-events:none;
+}
+.booth-card::after{
+  content:'';position:absolute;inset:3px;border-radius:3px;
+  box-shadow:inset 0 0 0 1px rgba(201,169,110,0.15);
+  z-index:6;pointer-events:none;
+}
+.card-bg{
+  position:absolute;inset:0;
+  background-size:cover;background-position:center;
+  transition:filter 0.7s ease,transform 0.7s ease;
+}
+.booth-card.unscanned .card-bg{
+  filter:grayscale(100%) blur(4px) brightness(0.6);
+  transform:scale(1.08);
+}
+.booth-card.unscanned .card-overlay{background:rgba(5,3,1,0.4)}
+.booth-card.unscanned .lock-wrap{display:flex}
+.booth-card.unscanned .done-badge{display:none}
+.booth-card.unscanned .card-name{color:#3a3020}
+.booth-card.unscanned .card-status{color:#2a2015}
+.booth-card.scanned .card-bg{filter:none;transform:scale(1)}
+.booth-card.scanned{
+  cursor:pointer;
+  box-shadow:0 0 0 1px rgba(201,169,110,0.4),0 8px 32px rgba(0,0,0,0.6),0 0 60px rgba(201,169,110,0.08);
+}
+.booth-card.scanned .card-overlay{
+  background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.3) 40%,transparent 70%);
+}
+.booth-card.scanned .lock-wrap{display:none}
+.booth-card.scanned .done-badge{display:flex}
+.booth-card.scanned .card-name{color:#f0e6d3}
+.booth-card.scanned .card-status{color:#c9a96e}
+.booth-card.scanned:hover{
+  transform:translateY(-3px);
+  box-shadow:0 0 0 1px rgba(201,169,110,0.6),0 16px 40px rgba(0,0,0,0.7),0 0 80px rgba(201,169,110,0.15);
+}
+
+/* ✅ เพิ่มใหม่ — ให้กดทะลุได้ */
+.booth-card.scanned .card-bg,
+.booth-card.scanned .card-overlay,
+.booth-card.scanned .card-spotlight,
+.booth-card.scanned .card-plate,
+.booth-card.scanned .card-plate-inner,
+.booth-card.scanned .done-badge,
+.booth-card.scanned .lock-wrap,
+.booth-card.scanned .card-num-label,
+.booth-card.scanned .card-name,
+.booth-card.scanned .card-status {
+  pointer-events:none !important;
+}
+
+.card-overlay{position:absolute;inset:0;transition:background 0.7s;z-index:2}
+.card-spotlight{
+  position:absolute;top:-20%;left:50%;transform:translateX(-50%);
+  width:80%;height:60%;
+  background:radial-gradient(ellipse,rgba(201,169,110,0.08) 0%,transparent 70%);
+  z-index:3;pointer-events:none;opacity:0;transition:opacity 0.7s;
+}
+.booth-card.scanned .card-spotlight{opacity:1}
+
+.lock-wrap{
+  position:absolute;inset:0;z-index:4;
+  align-items:center;justify-content:center;
+  flex-direction:column;gap:6px;
+}
+.lock-circle{
+  width:44px;height:44px;border-radius:50%;
+  border:1px solid rgba(201,169,110,0.12);
+  background:rgba(0,0,0,0.5);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;color:rgba(201,169,110,0.15);
+  backdrop-filter:blur(4px);
+}
+.lock-num{
+  font-family:'Times New Roman',Times,serif;
+  font-size:0.75rem;color:rgba(201,169,110,0.12);
+}
+
+.done-badge{
+  position:absolute;top:8px;right:8px;z-index:5;
+  width:28px;height:28px;
+  background:linear-gradient(135deg,#c9a96e,#8B6914);
+  border-radius:50%;
+  align-items:center;justify-content:center;
+  font-size:0.75rem;color:#fff;
+  box-shadow:0 2px 10px rgba(201,169,110,0.5);
+  animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+
+.card-plate{position:absolute;bottom:0;left:0;right:0;z-index:5;padding:0 10px 10px}
+.booth-card.scanned .card-plate-inner{
+  background:rgba(12,9,4,0.9);
+  border-top:1px solid rgba(201,169,110,0.2);
+  padding:8px 10px;border-radius:0 0 3px 3px;
+}
+.booth-card.unscanned .card-plate-inner{background:rgba(5,3,1,0.7);padding:8px 10px}
+.card-num-label{
+  font-family:'Times New Roman',Times,serif;
+  font-size:0.58rem;color:rgba(201,169,110,0.4);
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:1px;
+}
+.card-name{
+  font-family:'Times New Roman',Times,serif;
+  font-size:0.72rem;font-weight:700;
+  line-height:1.3;transition:color 0.5s;
+}
+.card-status{
+  font-family:'Times New Roman',Times,serif;
+  font-size:0.65rem;margin-top:2px;
+  font-style:italic;transition:color 0.5s;
+}
+/* ===== Card 11 — Reward Card Fix ===== */
+.reward-card {
+  border-radius: 5px;
+  position: relative;
+  aspect-ratio: 3/4;
+  grid-column: span 2;
+  max-width: 195px;
+  margin: 0 auto;
+  width: 100%;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.4s, box-shadow 0.4s;
+  justify-self: center;  /* ← เพิ่มบรรทัดนี้ */
+}
+/* ===== ซ่อน/แสดง สถานะ ===== */
+.reward-card.locked .r-unlocked,
+.reward-card.locked .r-claimed { display: none !important; }
+
+.reward-card.unlocked .r-locked,
+.reward-card.unlocked .r-claimed { display: none !important; }
+
+.reward-card.claimed .r-locked,
+.reward-card.claimed .r-unlocked { display: none !important; }
+.reward-card.claimed .r-claimed { display: flex !important; }
+
+/* ===== Locked State ===== */
+.r-locked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  gap: 8px;
+}
+
+/* ===== Unlocked State ===== */
+.r-unlocked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  gap: 6px;
+}
+
+.r-trophy {
+  font-size: 2.8rem;
+  line-height: 1;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 4px 12px rgba(201, 169, 110, 0.4));
+}
+
+.r-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  background: linear-gradient(90deg, #c9a96e, #e8cc99, #c9a96e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200%;
+  animation: goldShine 3s ease infinite;
+  white-space: nowrap;
+}
+
+.r-sub {
+  font-size: 0.82rem;
+  color: #999;
+  line-height: 1.6;
+  margin: 4px 0 8px;
+}
+
+@keyframes goldShine {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ===== Reward Button ===== */
+.r-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 80%;
+  max-width: 220px;
+  margin: 8px auto 0;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #c9a96e, #b8943f);
+  border: 1px solid rgba(232, 204, 153, 0.3);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.r-btn::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  animation: btnShine 3s ease infinite;
+}
+
+@keyframes btnShine {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  30%, 100% { transform: translateX(100%) rotate(45deg); }
+}
+
+.r-btn:active {
+  transform: scale(0.96);
+}
+
+/* ===== Lock State Styles ===== */
+.r-lock-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #888;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.r-lock-sub {
+  font-size: 0.78rem;
+  color: #666;
+  line-height: 1.5;
+  text-align: center;
+  margin: 4px 0;
+}
+
+/* ===== Mini Dots ===== */
+.mini-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin: 8px 0;
+}
+
+.mdot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2a2a4a;
+  transition: all 0.3s ease;
+}
+
+.mdot.on {
+  background: #c9a96e;
+  box-shadow: 0 0 6px rgba(201, 169, 110, 0.5);
+}
+
+/* ===== Progress Text ===== */
+.r-prog-text {
+  font-size: 0.72rem;
+  color: #555;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+/* ===== Question Spin ===== */
+.q-spin-wrap {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.q-spin {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #555;
+  border: 2px solid #333;
+  border-radius: 50%;
+  animation: spinPulse 2s ease infinite;
+}
+
+@keyframes spinPulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+/* ===== Claimed State ===== */
+.r-claimed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  gap: 6px;
+}
+
+/* BOTTOM BAR */
+.bottom-bar{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;
+  padding:16px 18px 36px;
+  background:linear-gradient(to top,#080603 55%,transparent);
+  z-index:100;
+}
+.scan-btn{
+  width:100%;
+  background:linear-gradient(135deg,#c9a96e 0%,#8B6914 50%,#c9a96e 100%);
+  background-size:200% 100%;
+  color:#0a0805;border:none;border-radius:3px;padding:17px;
+  font-family:'Times New Roman',Times,serif;
+  font-size:1rem;font-weight:700;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 4px 20px rgba(201,169,110,0.3),inset 0 1px 0 rgba(255,255,255,0.2);
+  transition:all 0.3s;letter-spacing:0.5px;
+  position:relative;overflow:hidden;
+}
+.scan-btn::before{
+  content:'';position:absolute;top:0;left:-100%;
+  width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);
+  transition:left 0.5s;
+}
+.scan-btn:hover::before{left:100%}
+.scan-btn:active{transform:scale(0.98)}
+.scan-btn.active{
+  background:linear-gradient(135deg,#1e1a10,#141008);
+  background-size:100%;color:#c9a96e;
+  border:1px solid rgba(201,169,110,0.2);box-shadow:none;
+}
+
+/* SCANNER */
+.scanner-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(5,3,1,0.97);
+  z-index:200;
+  flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 24px;
+}
+.scanner-overlay.show{display:flex}
+.scan-head{text-align:center;margin-bottom:32px}
+.scan-head h2{
+  font-family:'Times New Roman',Times,serif;
+  font-size:1.6rem;color:#f0e6d3;margin-bottom:6px;
+}
+.scan-head p{
+  font-family:'Times New Roman',Times,serif;
+  color:#555;font-size:0.9rem;font-style:italic;
+}
+.frame-wrap{position:relative;width:270px;height:270px}
+#reader{width:270px !important;height:270px !important;border-radius:4px;overflow:hidden}
+.corner{position:absolute;width:20px;height:20px;border-color:#c9a96e;border-style:solid;z-index:10}
+.corner.tl{top:-1px;left:-1px;border-width:2px 0 0 2px;border-radius:3px 0 0 0}
+.corner.tr{top:-1px;right:-1px;border-width:2px 2px 0 0;border-radius:0 3px 0 0}
+.corner.bl{bottom:-1px;left:-1px;border-width:0 0 2px 2px;border-radius:0 0 0 3px}
+.corner.br{bottom:-1px;right:-1px;border-width:0 2px 2px 0;border-radius:0 0 3px 0}
+.scan-line{
+  position:absolute;left:6px;right:6px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,169,110,0.8),transparent);
+  animation:scanMove 2s ease-in-out infinite;z-index:11;
+  box-shadow:0 0 8px rgba(201,169,110,0.5);
+}
+@keyframes scanMove{
+  0%{top:6px;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:264px;opacity:0}
+}
+.close-scan-btn{
+  margin-top:32px;background:transparent;
+  border:1px solid rgba(201,169,110,0.15);
+  color:rgba(201,169,110,0.4);
+  padding:12px 36px;border-radius:3px;
+  font-family:'Times New Roman',Times,serif;
+  font-size:0.95rem;font-style:italic;
+  cursor:pointer;transition:all 0.3s;letter-spacing:1px;
+}
+.close-scan-btn:hover{border-color:rgba(201,169,110,0.4);color:rgba(201,169,110,0.8)}
+
+/* MODALS */
+.modal-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);
+  z-index:300;align-items:flex-end;justify-content:center;
+}
+.modal-overlay.show{display:flex}
+.sheet{
+  background:linear-gradient(180deg,#111008,#0a0805);
+  border-top:1px solid rgba(201,169,110,0.15);
+  border-left:1px solid rgba(201,169,110,0.08);
+  border-right:1px solid rgba(201,169,110,0.08);
+  border-radius:20px 20px 0 0;
+  padding:24px 22px 48px;
+  width:100%;max-width:430px;
+  text-align:center;
+  animation:slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  position:relative;overflow:hidden;
+}
+.sheet::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,169,110,0.4),transparent);
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.handle{width:32px;height:2px;background:rgba(201,169,110,0.2);border-radius:1px;margin:0 auto 20px}
+.s-icon{font-size:2.2rem;margin-bottom:8px}
+.s-title{
+  font-family:'Times New Roman',Times,serif;
+  font-size:1.35rem;color:#f0e6d3;margin-bottom:6px;
+}
+.s-desc{
+  font-family:'Times New Roman',Times,serif;
+  color:#666;font-size:0.9rem;margin-bottom:20px;
+  line-height:1.7;font-style:italic;
+}
+.s-btn{
+  width:100%;
+  background:linear-gradient(135deg,#c9a96e,#8B6914);
+  color:#0a0805;border:none;border-radius:3px;padding:15px;
+  font-family:'Times New Roman',Times,serif;
+  font-size:0.95rem;font-weight:700;
+  cursor:pointer;letter-spacing:0.5px;
+  box-shadow:0 4px 16px rgba(201,169,110,0.25);
+}
+.s-btn.red{background:linear-gradient(135deg,#4a1010,#2a0808);color:#e8d5d5;box-shadow:none}
+
+.win-sheet{background:linear-gradient(180deg,#130f06,#0a0805);border-top:1px solid rgba(201,169,110,0.25)}
+.divider-ornament{display:flex;align-items:center;gap:8px;margin:16px 0}
+.divider-ornament::before,.divider-ornament::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,169,110,0.25),transparent);
+}
+.divider-ornament span{font-size:0.6rem;color:rgba(201,169,110,0.3)}
+.coupon-box{
+  background:rgba(201,169,110,0.05);
+  border:1px solid rgba(201,169,110,0.2);
+  border-radius:4px;padding:16px;margin-bottom:16px;position:relative;
+}
+.coupon-box::before,.coupon-box::after{
+  content:'';position:absolute;width:12px;height:12px;
+  border-radius:50%;background:#0a0805;top:50%;transform:translateY(-50%);
+}
+.coupon-box::before{left:-6px}
+.coupon-box::after{right:-6px}
+.c-label{
+  font-family:'Times New Roman',Times,serif;
+  font-size:0.65rem;color:rgba(201,169,110,0.5);
+  letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;font-style:italic;
+}
+.c-code{
+  font-family:'Times New Roman',Times,serif;
+  font-size:1.6rem;color:#c9a96e;letter-spacing:5px;
+}
+.win-info{
+  font-family:'Times New Roman',Times,serif;
+  font-size:0.85rem;color:#4a4030;line-height:2.2;
+  margin-bottom:18px;font-style:italic;
+}
+.win-info em{color:#7a6a50;font-style:normal}
+
+/* DATE LOCK */
+.date-lock{
+  display:none;position:fixed;inset:0;
+  background:linear-gradient(180deg,#1c1408 0%,#0a0805 100%);
+  z-index:9999;
+  flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 24px;text-align:center;
+}
+.date-lock.show{display:flex}
+.dl-icon{font-size:4rem;margin-bottom:20px;animation:floatUp 3s ease-in-out infinite}
+.dl-title{
+  font-family:'Times New Roman',Times,serif;
+  font-size:1.8rem;font-weight:900;
+  color:#fff;margin-bottom:8px;line-height:1.3;
+}
+.dl-sub{
+  font-family:'Times New Roman',Times,serif;
+  font-size:1rem;font-style:italic;
+  color:rgba(201,169,110,0.6);
+  margin-bottom:30px;line-height:1.8;
+}
+.dl-date-box{
+  background:rgba(201,169,110,0.06);
+  border:1px solid rgba(201,169,110,0.2);
+  border-radius:4px;padding:20px 32px;
+  margin-bottom:30px;position:relative;
+}
+.dl-date-box::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,169,110,0.4),transparent);
+}
+.dl-date-label{
+  font-family:'Times New Roman',Times,serif;
+  font-size:0.7rem;letter-spacing:3px;
+  color:rgba(201,169,110,0.4);
+  text-transform:uppercase;margin-bottom:8px;
+}
+.dl-date-text{
+  font-family:'Times New Roman',Times,serif;
+  font-size:1.3rem;color:#c9a96e;letter-spacing:1px;
+}
+.dl-current{
+  font-family:'Times New Roman',Times,serif;
+  font-size:0.85rem;color:#444;font-style:italic;margin-top:8px;
+}
+.dl-ornament{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:24px;width:100%;max-width:300px;
+}
+.dl-ornament::before,.dl-ornament::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,169,110,0.2),transparent);
+}
+.dl-ornament span{font-size:0.6rem;color:rgba(201,169,110,0.3)}
+.countdown-wrap{
+  background:rgba(0,0,0,0.3);
+  border:1px solid rgba(201,169,110,0.1);
+  border-radius:4px;padding:16px 24px;margin-bottom:20px;
+}
+.countdown-label{
+  font-family:'Times New Roman',Times,serif;
+  font-size:0.7rem;letter-spacing:2px;
+  color:rgba(201,169,110,0.3);
+  text-transform:uppercase;margin-bottom:10px;
+}
+.countdown-timer{
+  font-family:'Times New Roman',Times,serif;
+  font-size:2rem;color:#c9a96e;letter-spacing:4px;
+}
+
+/* ===== Member Modal ===== */
+.member-sheet { max-height: 85vh; overflow-y: auto; padding-bottom: 30px; }
+.member-header { text-align: center; padding: 10px 0 5px; }
+.member-booth-num { font-size: 0.7rem; letter-spacing: 2px; color: #888; text-transform: uppercase; }
+.member-booth-name {
+  font-size: 1.2rem; font-weight: 700; margin: 4px 0;
+  background: linear-gradient(90deg, #c9a96e, #e8cc99, #c9a96e);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.member-divider { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
+.member-divider::before, .member-divider::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, #333, transparent);
+}
+.member-divider span { color: #c9a96e; font-size: 10px; }
+.member-label { font-size: 0.75rem; letter-spacing: 1.5px; color: #666; text-transform: uppercase; margin-bottom: 10px; }
+
+.member-list { display: flex; flex-direction: column; gap: 10px; padding: 0 5px; }
+.member-card {
+  display: flex; align-items: center; gap: 14px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px; padding: 14px; animation: memberSlide 0.4s ease both;
+}
+@keyframes memberSlide {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.member-avatar {
+  width: 46px; height: 46px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.member-avatar span { font-size: 1.1rem; font-weight: 700; color: #fff; }
+.member-info { flex: 1; }
+.member-name { font-size: 0.9rem; font-weight: 600; color: #eee; }
+.member-ig {
+  display: inline-block; margin-top: 6px; padding: 4px 12px;
+  background: rgba(228, 64, 95, 0.1); border: 1px solid rgba(228, 64, 95, 0.2);
+  border-radius: 20px; color: #e4405f; font-size: 0.72rem; text-decoration: none;
+}
+.member-ig:active { background: rgba(228, 64, 95, 0.25); }
+.member-empty { text-align: center; color: #666; padding: 30px; font-size: 0.85rem; }
+.member-close-btn { margin-top: 15px; background: rgba(255,255,255,0.08) !important; border: 1px solid rgba(255,255,255,0.1) !important; }
+
+/* ADMIN LOGIN */
+.admin-login-btn{
+  display:none; /* ← ซ่อนปุ่มเดิมไว้ก่อน */
+}
+
+/* ปุ่ม Admin บนหน้า Date Lock */
+.dl-admin-btn{
+  position:fixed;
+  bottom:24px;
+  right:24px;
+  width:36px;height:36px;
+  background:rgba(201,169,110,0.06);
+  border:1px solid rgba(201,169,110,0.12);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.85rem;
+  cursor:pointer;
+  z-index:10000;
+  transition:all 0.3s;
+  color:rgba(201,169,110,0.25);
+}
+.dl-admin-btn:hover{
+  background:rgba(201,169,110,0.15);
+  border-color:rgba(201,169,110,0.4);
+  color:rgba(201,169,110,0.8);
+}
+
+.admin-overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.92);
+  backdrop-filter:blur(16px);
+  z-index:99999;
+  align-items:center;justify-content:center;
+  padding:24px;
+}
+.admin-overlay.show{display:flex}
+
+.admin-sheet{
+  background:linear-gradient(180deg,#130f06,#0a0805);
+  border:1px solid rgba(201,169,110,0.2);
+  border-radius:20px;
+  padding:32px 28px;
+  width:100%;max-width:320px;
+  text-align:center;
+  position:relative;overflow:hidden;
+  animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.admin-sheet::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,169,110,0.5),transparent);
+}
+.admin-icon{font-size:2rem;margin-bottom:12px}
+.admin-title{
+  font-family:'Times New Roman',Times,serif;
+  font-size:1.2rem;color:#f0e6d3;margin-bottom:4px;
+}
+.admin-sub{
+  font-family:'Times New Roman',Times,serif;
+  font-size:0.8rem;color:#555;
+  font-style:italic;margin-bottom:24px;
+}
+.admin-input{
+  width:100%;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(201,169,110,0.2);
+  border-radius:4px;
+  padding:14px 16px;
+  font-family:'Times New Roman',Times,serif;
+  font-size:1rem;color:#f0e6d3;
+  letter-spacing:4px;
+  text-align:center;
+  outline:none;
+  transition:border-color 0.3s;
+  margin-bottom:12px;
+}
+.admin-input:focus{
+  border-color:rgba(201,169,110,0.5);
+  background:rgba(201,169,110,0.05);
+}
+.admin-input::placeholder{
+  color:#333;letter-spacing:1px;font-size:0.85rem;
+}
+.admin-error{
+  font-size:0.78rem;color:#c97b7b;
+  font-style:italic;margin-bottom:12px;min-height:18px;
+}
+.admin-confirm-btn{
+  width:100%;
+  background:linear-gradient(135deg,#c9a96e,#8B6914);
+  color:#0a0805;border:none;border-radius:4px;
+  padding:14px;
+  font-family:'Times New Roman',Times,serif;
+  font-size:0.95rem;font-weight:700;
+  cursor:pointer;letter-spacing:1px;
+  box-shadow:0 4px 16px rgba(201,169,110,0.25);
+  transition:all 0.3s;margin-bottom:10px;
+}
+.admin-confirm-btn:hover{
+  box-shadow:0 6px 24px rgba(201,169,110,0.4);
+  transform:translateY(-1px);
+}
+.admin-confirm-btn:active{transform:scale(0.97)}
+.admin-cancel-btn{
+  width:100%;background:transparent;
+  border:1px solid rgba(255,255,255,0.06);
+  color:#444;border-radius:4px;padding:12px;
+  font-family:'Times New Roman',Times,serif;
+  font-size:0.85rem;cursor:pointer;transition:all 0.3s;
+}
+.admin-cancel-btn:hover{border-color:#333;color:#666}
+
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)}
+  60%{transform:translateX(-6px)}
+  80%{transform:translateX(6px)}
+}
+.shake{animation:shake 0.4s ease}
+
+/* ===== ให้กดการ์ดได้ ===== */
+.booth-card.scanned { cursor: pointer; }
+.booth-card.scanned .card-overlay,
+.booth-card.scanned .card-spotlight,
+.booth-card.scanned .card-bg,
+.booth-card.scanned .card-plate,
+.booth-card.scanned .card-plate-inner,
+.booth-card.scanned .done-badge {
+  pointer-events: none;
+}
+
+</style>
+</head>
+<body>
+<div class="museum-bg"></div>
+<div class="vignette"></div>
+<div class="light-beam"></div>
+<div class="museum-frame-top"></div>
+<div class="museum-frame-bottom"></div>
+<div class="corner-ornament co-tl">
+  <svg viewBox="0 0 60 60" fill="none">
+    <path d="M5 5 L5 25 Q5 5 25 5 Z" fill="rgba(201,169,110,0.6)"/>
+    <path d="M5 5 L30 5 Q5 5 5 30 Z" fill="rgba(201,169,110,0.3)"/>
+    <circle cx="5" cy="5" r="2" fill="rgba(201,169,110,0.8)"/>
+    <path d="M5 15 Q10 10 15 5" stroke="rgba(201,169,110,0.4)" stroke-width="0.5" fill="none"/>
+    <path d="M5 25 Q15 15 25 5" stroke="rgba(201,169,110,0.3)" stroke-width="0.5" fill="none"/>
+  </svg>
+</div>
+<div class="corner-ornament co-tr">
+  <svg viewBox="0 0 60 60" fill="none">
+    <path d="M5 5 L5 25 Q5 5 25 5 Z" fill="rgba(201,169,110,0.6)"/>
+    <path d="M5 5 L30 5 Q5 5 5 30 Z" fill="rgba(201,169,110,0.3)"/>
+    <circle cx="5" cy="5" r="2" fill="rgba(201,169,110,0.8)"/>
+    <path d="M5 15 Q10 10 15 5" stroke="rgba(201,169,110,0.4)" stroke-width="0.5" fill="none"/>
+    <path d="M5 25 Q15 15 25 5" stroke="rgba(201,169,110,0.3)" stroke-width="0.5" fill="none"/>
+  </svg>
+</div>
+<div class="corner-ornament co-bl">
+  <svg viewBox="0 0 60 60" fill="none">
+    <path d="M5 5 L5 25 Q5 5 25 5 Z" fill="rgba(201,169,110,0.6)"/>
+    <path d="M5 5 L30 5 Q5 5 5 30 Z" fill="rgba(201,169,110,0.3)"/>
+    <circle cx="5" cy="5" r="2" fill="rgba(201,169,110,0.8)"/>
+  </svg>
+</div>
+<div class="corner-ornament co-br">
+  <svg viewBox="0 0 60 60" fill="none">
+    <path d="M5 5 L5 25 Q5 5 25 5 Z" fill="rgba(201,169,110,0.6)"/>
+    <path d="M5 5 L30 5 Q5 5 5 30 Z" fill="rgba(201,169,110,0.3)"/>
+    <circle cx="5" cy="5" r="2" fill="rgba(201,169,110,0.8)"/>
+  </svg>
+</div>
+
+<!-- Main Container -->
+<div class="container">
+  <div class="header">
+    <div class="header-line">
+      <div class="header-diamond"></div>
+      <div class="header-diamond"></div>
+      <div class="header-diamond"></div>
+    </div>
+    <div class="museum-label">— The Exhibition —</div>
+    <div class="title-main">
+      <span class="title-co">Co</span><span class="title-exist">exist</span>
+      <span class="title-separator"> · </span>
+      <span class="title-cosci">COSCI</span>
+    </div>
+    <div class="header-tagline">Museum of Student Innovation</div>
+    <div class="header-ornament">
+      <div class="orn-line"></div>
+      <div class="orn-center">✦</div>
+      <div class="orn-line r"></div>
+    </div>
+  </div>
+  <div class="progress-section">
+    <div class="prog-label-top">Exhibition Progress</div>
+    <div class="prog-row">
+      <div class="prog-num" id="scanCount">0</div>
+      <div class="prog-sep">&thinsp;/&thinsp;</div>
+      <div class="prog-total">10</div>
+      <div class="prog-unit">บูธที่เยี่ยมชม</div>
+    </div>
+    <div class="prog-track">
+      <div class="prog-fill" id="progressBar"></div>
+    </div>
+  </div>
+  <div class="section-title"><span>The Gallery</span></div>
+  <div class="booth-grid" id="boothGrid"></div>
+</div>
+
+<!-- Bottom Bar -->
+<div class="bottom-bar">
+  <button class="scan-btn" id="mainScanBtn" onclick="openScanner()">
+    <span>▣</span><span>สแกน QR Code</span>
+  </button>
+</div>
+
+<!-- Scanner -->
+<div class="scanner-overlay" id="scannerOverlay">
+  <div class="scan-head">
+    <h2>Scan QR Code</h2>
+    <p>นำกล้องไปจ่อที่ QR Code ของบูธ</p>
+  </div>
+  <div class="frame-wrap">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div class="scan-line"></div>
+    <div id="reader"></div>
+  </div>
+  <button class="close-scan-btn" onclick="closeScanner()">✕  ยกเลิก</button>
+</div>
+
+<!-- Success Modal -->
+<div class="modal-overlay" id="successModal">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="s-icon">✓</div>
+    <div class="s-title">สแกนสำเร็จ</div>
+    <div class="s-desc" id="successText"></div>
+    <button class="s-btn" onclick="closeModal('successModal')">ตกลง</button>
+  </div>
+</div>
+
+<!-- Already Modal -->
+<div class="modal-overlay" id="alreadyModal">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="s-icon">⚠</div>
+    <div class="s-title" style="color:#9B6B6B">เยี่ยมชมแล้ว</div>
+    <div class="s-desc" id="alreadyText"></div>
+    <button class="s-btn red" onclick="closeModal('alreadyModal')">ตกลง</button>
+  </div>
+</div>
+
+<!-- Win Modal -->
+<div class="modal-overlay" id="winModal">
+  <div class="sheet win-sheet">
+    <div class="handle"></div>
+    <!-- สถานะ 1: ยังไม่รับ -->
+    <div id="reward-pending">
+      <div style="font-size:2.2rem;margin-bottom:6px">🏆</div>
+      <div class="s-title" style="background:linear-gradient(90deg,#c9a96e,#e8cc99,#c9a96e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200%">
+        ยินดีด้วย
+      </div>
+      <div class="s-desc">คุณเยี่ยมชมครบทุกบูธแล้ว</div>
+      <div class="divider-ornament"><span>✦</span></div>
+      <div class="coupon-box">
+        <div class="c-label">Exhibition Reward</div>
+        <div class="c-code" id="couponCode">——</div>
+      </div>
+      <div class="win-info">
+        <em>📍</em> รับของรางวัลที่บูธแลกรางวัล<br>
+        <em>🕐</em> ภายในวันงานเท่านั้น<br>
+        <em>📋</em> แสดงหน้าจอให้เจ้าหน้าที่
+      </div>
+      <button class="s-btn" onclick="claimReward()">รับทราบ — ไปรับของรางวัล</button>
+    </div>
+    <!-- ✅ สถานะ 2: รับรางวัลแล้ว — ไม่มี memberModal อยู่ในนี้ -->
+    <div id="reward-claimed" style="display:none;">
+      <div class="claimed-check-circle">
+        <svg class="claimed-check-svg" viewBox="0 0 52 52">
+          <circle class="claimed-check-bg" cx="26" cy="26" r="25"/>
+          <path class="claimed-check-mark" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+        </svg>
+      </div>
+      <div class="claimed-title">รับรางวัลแล้ว</div>
+      <div class="claimed-subtitle">ขอบคุณที่ร่วมกิจกรรม!</div>
+      <div class="claimed-divider"><span>✦</span></div>
+      <div class="claimed-badge">
+        <div class="claimed-badge-icon">🏛️</div>
+        <div class="claimed-badge-text">
+          <div class="claimed-badge-name">Coexist · COSCI</div>
+          <div class="claimed-badge-sub">Museum of Student Innovation</div>
+        </div>
+      </div>
+      <div class="claimed-stamp">
+        <div class="claimed-stamp-inner">
+          <div class="claimed-stamp-text">CLAIMED</div>
+          <div class="claimed-stamp-date" id="claimed-time"></div>
+        </div>
+      </div>
+      <div class="claimed-confetti">
+        <span style="--i:0">✦</span>
+        <span style="--i:1">·</span>
+        <span style="--i:2">✦</span>
+        <span style="--i:3">·</span>
+        <span style="--i:4">✦</span>
+      </div>
+      <button class="s-btn claimed-done-btn" onclick="closeModal('winModal')">ตกลง</button>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ memberModal — อยู่นอก winModal ถูกต้อง! -->
+<div class="modal-overlay" id="memberModal">
+  <div class="sheet member-sheet">
+    <div class="handle"></div>
+    <div class="member-header">
+      <div class="member-booth-num" id="memberBoothNum"></div>
+      <div class="member-booth-name" id="memberBoothName"></div>
+      <div class="member-divider"><span>✦</span></div>
+      <div class="member-label">Team Members</div>
+    </div>
+    <div class="member-list" id="memberList"></div>
+    <button class="s-btn member-close-btn" onclick="closeModal('memberModal')">ปิด</button>
+  </div>
+</div>
+
+<!-- ✅ Date Lock — มีแค่ 1 ตัว -->
+<div class="date-lock" id="dateLock">
+  <div class="dl-icon" id="dlIcon">🏛️</div>
+  <div class="dl-title" id="dlTitle">ยังไม่ถึงวันงาน</div>
+  <div class="dl-sub" id="dlSub">
+    กิจกรรมนี้จัดขึ้นในวันที่<br>
+    17 — 18 พฤษภาคม 2569
+  </div>
+  <div class="dl-date-box">
+    <div class="dl-date-label">— Event Date —</div>
+    <div class="dl-date-text">17 · 18 May 2026</div>
+    <div class="dl-current" id="dlCurrent"></div>
+  </div>
+  <div class="dl-ornament"><span>✦</span></div>
+  <div class="countdown-wrap" id="countdownWrap">
+    <div class="countdown-label">เริ่มงานใน</div>
+    <div class="countdown-timer" id="countdownTimer">--:--:--</div>
+  </div>
+  <div style="font-family:'Times New Roman',Times,serif;font-size:0.8rem;color:rgba(201,169,110,0.25);font-style:italic;letter-spacing:1px;margin-top:16px">
+    Coexist · COSCI
+  </div>
+  <!-- ✅ ปุ่ม Admin มีแค่ 1 ตัว -->
+  <button class="dl-admin-btn" onclick="openAdminLogin()" title="Admin">⚙</button>
+</div>
+
+<!-- Admin Login Modal -->
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-sheet" id="adminSheet">
+    <div class="admin-icon">🔑</div>
+    <div class="admin-title">Admin Access</div>
+    <div class="admin-sub">กรอก Admin ID เพื่อเข้าระบบ</div>
+    <input
+      class="admin-input"
+      id="adminInput"
+      type="password"
+      placeholder="Enter ID"
+      onkeydown="if(event.key==='Enter') confirmAdmin()"
+      autocomplete="off"
+    />
+    <div class="admin-error" id="adminError"></div>
+    <button class="admin-confirm-btn" onclick="confirmAdmin()">เข้าสู่ระบบ</button>
+    <button class="admin-cancel-btn" onclick="closeAdminLogin()">ยกเลิก</button>
+  </div>
+</div>
+
+</body>
+  
+<script>
+  
+// ===== รับรางวัล =====
+function claimReward() {
+  var today = new Date().toISOString().split('T'); // ✅ แก้ เพิ่ม 
+  var lastClaimed = localStorage.getItem('reward_claimed_date');
+  if (lastClaimed === today) {
+    document.getElementById('reward-pending').style.display = 'none';
+    document.getElementById('reward-claimed').style.display = 'block';
+    var t = localStorage.getItem('reward_claimed_time');
+    if (t) {
+      document.getElementById('claimed-time').textContent =
+        new Date(t).toLocaleString('th-TH');
+    }
+    return;
+  }
+  var now = new Date().toISOString();
+  localStorage.setItem('reward_claimed', 'true');
+  localStorage.setItem('reward_claimed_date', today); // ✅ เก็บ string ถูกต้อง
+  localStorage.setItem('reward_claimed_time', now);
+  document.getElementById('reward-pending').style.display = 'none';
+  document.getElementById('reward-claimed').style.display = 'block';
+  document.getElementById('claimed-time').textContent =
+    new Date(now).toLocaleString('th-TH');
+  updateCard11();
+}
+
+// ═══════════════════════════
+// ADMIN
+// ═══════════════════════════
+const ADMIN_QR = "ADMIN_DEVPLAN_2026";
+const ADMIN_ID = "1040";
+
+// ═══════════════════════════
+// DATE SYSTEM
+// ═══════════════════════════
+function getTodayKey(){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth();
+  const d = now.getDate();
+  if(y===2026 && m===4 && d===17) return 'day17';
+  if(y===2026 && m===4 && d===18) return 'day18';
+  return null;
+}
+const todayKey   = getTodayKey();
+const storageKey = todayKey ? `scannedBooths_${todayKey}` : 'scannedBooths_none';
+const rewardKey  = todayKey ? `rewardCode_${todayKey}`    : 'rewardCode_none';
+let scanned = JSON.parse(localStorage.getItem(storageKey)||'[]');
+
+// ═══════════════════════════
+// DATE LOCK
+// ═══════════════════════════
+function checkDate(){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth();
+  const d = now.getDate();
+  if(y===2026 && m===4 && (d===17||d===18)){
+    document.getElementById('dateLock').classList.remove('show');
+    return;
+  }
+  const lock      = document.getElementById('dateLock');
+  const dlIcon    = document.getElementById('dlIcon');
+  const dlTitle   = document.getElementById('dlTitle');
+  const dlSub     = document.getElementById('dlSub');
+  const dlCurrent = document.getElementById('dlCurrent');
+  const cdWrap    = document.getElementById('countdownWrap');
+  const cdTimer   = document.getElementById('countdownTimer');
+  const thaiMonths=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
+                    'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+  dlCurrent.textContent=`วันนี้: ${d} ${thaiMonths[m]} ${y+543}`;
+  const eventStart=new Date(2026,4,17,0,0,0); // ✅ แก้ เดือน 4 = พฤษภาคม
+  if(now<eventStart){
+    dlIcon.textContent='🔒';
+    dlTitle.textContent='ยังไม่ถึงวันงาน';
+    dlSub.innerHTML='กิจกรรมนี้จัดขึ้นในวันที่<br><b style="color:#c9a96e">17 — 18 พฤษภาคม 2569</b>';
+    cdWrap.style.display='block';
+    function updateCountdown(){
+      const diff=eventStart-new Date();
+      if(diff<=0){location.reload();return;}
+      const dd=Math.floor(diff/86400000);
+      const h=Math.floor((diff%86400000)/3600000);
+      const mi=Math.floor((diff%3600000)/60000);
+      const s=Math.floor((diff%60000)/1000);
+      cdTimer.textContent=dd>0
+        ?`${dd} วัน ${String(h).padStart(2,'0')}:${String(mi).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+        :`${String(h).padStart(2,'0')}:${String(mi).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }
+    updateCountdown();
+    setInterval(updateCountdown,1000);
+  } else {
+    dlIcon.textContent='⌛';
+    dlTitle.textContent='หมดเวลาแล้ว';
+    dlSub.innerHTML='กิจกรรมสิ้นสุดแล้ว<br>ขอบคุณที่เข้าร่วมงาน 🙏';
+    cdWrap.style.display='none';
+  }
+  lock.classList.add('show');
+}
+checkDate();
+setInterval(checkDate,60000);
+
+// ═══════════════════════════
+// ADMIN LOGIN
+// ═══════════════════════════
+function openAdminLogin(){
+  document.getElementById('adminOverlay').classList.add('show');
+  document.getElementById('adminInput').value='';
+  document.getElementById('adminError').textContent='';
+  setTimeout(()=>document.getElementById('adminInput').focus(),300);
+}
+function closeAdminLogin(){
+  document.getElementById('adminOverlay').classList.remove('show');
+  document.getElementById('adminInput').value='';
+  document.getElementById('adminError').textContent='';
+}
+function confirmAdmin(){
+  const input=document.getElementById('adminInput').value.trim();
+  const error=document.getElementById('adminError');
+  const sheet=document.getElementById('adminSheet');
+  if(input===ADMIN_ID){
+    closeAdminLogin();
+    document.getElementById('dateLock').classList.remove('show');
+    document.getElementById('successText').textContent='🔑 Admin Mode — เข้าระบบสำเร็จ';
+    showModal('successModal');
+  } else {
+    error.textContent='⚠ ID ไม่ถูกต้อง';
+    sheet.classList.add('shake');
+    document.getElementById('adminInput').value='';
+    document.getElementById('adminInput').focus();
+    setTimeout(()=>sheet.classList.remove('shake'),500);
+  }
+}
+
+// ═══════════════════════════
+// BOOTH DATA
+// ═══════════════════════════
+const booths=[
+  {id:"BOOTH_01",name:"Plan Your Glam",          icon:"💄",img:"Team/Plan Your Glam.jpg",          grad:"linear-gradient(160deg,#3d1a2e 0%,#1a0d16 100%)"},
+  {id:"BOOTH_02",name:"Behind Her Wall",          icon:"🧱",img:"Team/Behind Her Wall.jpg",         grad:"linear-gradient(160deg,#1a2d3d 0%,#0d1520 100%)"},
+  {id:"BOOTH_03",name:"Price's Up",               icon:"📈",img:"Team/Price s Up.jpg",              grad:"linear-gradient(160deg,#3d2a1a 0%,#201508 100%)"},
+  {id:"BOOTH_04",name:"Chanrong Plan",            icon:"🐝",img:"Team/Chanrong Plan.jpg",           grad:"linear-gradient(160deg,#2d3a1a 0%,#161d08 100%)"},
+  {id:"BOOTH_05",name:"Left4Debt",                icon:"💀",img:"Team/Left4Debt.jpg",               grad:"linear-gradient(160deg,#2d1a1a 0%,#180808 100%)"},
+  {id:"BOOTH_06",name:"Sukhumvit Thaicoon",       icon:"🎲",img:"Team/Sukhumvit Thaicoon.jpg",      grad:"linear-gradient(160deg,#1a3d2d 0%,#081e15 100%)"},
+  {id:"BOOTH_07",name:"Inside Intern",            icon:"💼",img:"Team/Inside Intern.jpg",           grad:"linear-gradient(160deg,#2a1a3d 0%,#140a20 100%)"},
+  {id:"BOOTH_08",name:"Mulakaa",                  icon:"💎",img:"Team/Mulakaa.jpg",                 grad:"linear-gradient(160deg,#3d2d1a 0%,#1e1608 100%)"},
+  {id:"BOOTH_09",name:"Hoop from Trash to Trend", icon:"♻️",img:"Team/Hoop from Trash to Trend.jpg",grad:"linear-gradient(160deg,#1a2d3d 0%,#081420 100%)"},
+  {id:"BOOTH_10",name:"moneymood",                icon:"💰",img:"Team/moneymood.jpg",               grad:"linear-gradient(160deg,#2a3d1a 0%,#131e08 100%)"},
+];
+
+// ═══════════════════════════
+// MEMBER DATA
+// ═══════════════════════════
+const boothMembers = {
+  'BOOTH_01': [
+    { name: 'Jaru Khaoborisut', ig: 'juuliekawaii' },
+    { name: 'Naiparporn Treejaroenwattanakul ', ig: ' kikhoonn' },
+    { name: 'Pichyapha Trichanphen', ig: 'pichaapar' },
+    { name: 'Salin Supasiwakul', ig: 'miiniesln_' },
+    { name: 'Hathaiphat Sripiboonpanich', ig: 'hathaipat.tt ' }
+  ],
+  'BOOTH_02': [
+    { name: 'Manthita Sukpattananarakul', ig: 'mew_mewm' },
+    { name: 'Chermika Thomkhonburi', ig: 'chermisun_flow' },
+    { name: 'Kodchakorn Apitanavit', ig: 'beyorzen' },
+    { name: 'Phantila Meoundej', ig: 'mutechatห' },
+    { name: 'Suputtra Nilwong', ig: '5upu1z11' }
+  ],
+  'BOOTH_03': [
+    { name: 'Papitchaya Rasarugse ', ig: 'papitpear' },
+    { name: 'Varinthorn Visedthorn', ig: 'cantavarin' },
+    { name: 'Napasorn Anusuwan', ig: 'np.ployyq' },
+    { name: 'Pamika Intawong', ig: 'amypamika' },
+    { name: 'Peeraya Thongthang', ig: 'yyorlors' }
+  ],
+  'BOOTH_04': [
+    { name: 'Sippapas (M)',      ig: 'demperorxyz' },
+    { name: 'Nonthawat (Best)',  ig: 'beststylsn'  },
+    { name: 'Voranate (Nut)',    ig: 'voranate_'   },
+    { name: 'Natchanon (Oat)',   ig: 'ncn_oat'     },
+    { name: 'Natapong (Palm)',   ig: 'palm_ntp'    }
+  ],
+  'BOOTH_05': [
+    { name: 'Papitchaya Pinkhiew', ig: 'modpitchayaa' },
+    { name: 'Kanis Pruksaplasai', ig: 'perttrep' },
+    { name: 'Natthanan  Ruengpiyasaree', ig: 'xinxnr' },
+    { name: 'Pitiphum Picheinpong', ig: 'm.ing_pp' },
+    { name: 'Suppasit Jitchalam', ig: 'Teleptelepp' }
+  ],
+  'BOOTH_06': [
+    { name: 'Bannaporn Duangdee', ig: 'nnoina.a' },
+    { name: 'Wasita kaewmit', ig: 'wasita_kk' },
+    { name: 'Phakyada Leeworakant', ig: 'Unnyyaa_' },
+    { name: 'Nawaporn Kosayanon', ig: 'kkhaowfangs' },
+    { name: 'Pattaradanai Phetdee', ig: 'pattarada9' }
+  ],
+  'BOOTH_07': [
+    { name: 'Puttida Lakananuruk', ig: 'jjaatida' },
+    { name: 'Phummin Rueangsri', ig: 'jettphummin' },
+    { name: 'Romnalin Warin', ig: 'plengrom' },
+    { name: 'Piyapat Tongngam', ig: 'aangangchrr' },
+    { name: 'Anchidta Tanetsakul', ig: 'jinnyjean.j' }
+  ],
+  'BOOTH_08': [
+    { name: 'Chanikarn toobchot', ig: 'mookccnk' },
+    { name: 'Pornnapat Suprakarn', ig: 'aaunpnp' },
+    { name: 'Nda Jamsai', ig: 'eveemns_' },
+    { name: 'Phimmada Paesomboon', ig: 'primms_ps' },
+    { name: 'Nattawee Chewpattayakon', ig: 'q_straydog' }
+  ],
+  'BOOTH_09': [
+    { name: 'Praewrung Mingmungmee', ig: 'pharawwe' },
+    { name: 'Chanikarn Mankwamdee', ig: 'milddcnk' },
+    { name: 'Thanatorn Silapaphakdee', ig: 'sskys_' },
+    { name: 'Pornnatcha  Damrongpante', ig: 'dewdpnc' },
+    { name: 'Dara Sritummanusarn', ig: 'toondara' }
+  ],
+  'BOOTH_10': [
+    { name: 'Warapa Phakdeejitti', ig: 'nnineess' },
+    { name: 'Tormai Supaket', ig: '02maii_' },
+    { name: 'Piyatida Pisutthirudkul', ig: 'mo_papr_' },
+    { name: 'Laphat Ying-in', ig: 'noey_laphat' },
+    { name: 'Laksika Lapmanee', ig: 'lluckylskk' }
+  ]
+};
+
+let html5QrCode = null, scannerOpen = false;
+
+// ═══════════════════════════
+// ✅ EVENT DELEGATION
+// ═══════════════════════════
+document.addEventListener('click', function(e) {
+  var card = e.target.closest('.booth-card.scanned');
+  if (!card) return;
+  if (card.classList.contains('reward-card')) return;
+  var grid = document.getElementById('boothGrid');
+  if (!grid) return;
+  var cards = grid.querySelectorAll('.booth-card:not(.reward-card)');
+  for (var idx = 0; idx < cards.length; idx++) {
+    if (cards[idx] === card) {
+      var b = booths[idx];
+      if (b) showMemberModal(b.id, b.name, idx + 1);
+      break;
+    }
+  }
+});
+
+// ═══════════════════════════
+// INIT & RENDER
+// ═══════════════════════════
+function init() { renderGrid(); updateProgress(); }
+
+function renderGrid() {
+  const grid = document.getElementById('boothGrid');
+  grid.innerHTML = '';
+  const allDone = scanned.length >= 10;
+  booths.forEach((b, i) => {
+    const done = scanned.includes(b.id);
+    const card = document.createElement('div');
+    card.className = `booth-card ${done ? 'scanned' : 'unscanned'}`;
+    const bgStyle = b.img
+      ? `background:url('${b.img}') center/cover no-repeat`
+      : `background:${b.grad}`;
+    const filterStyle = done
+      ? 'filter:none;transform:scale(1)'
+      : 'filter:grayscale(100%) blur(4px) brightness(0.6);transform:scale(1.08)';
+    card.innerHTML = `
+      <div class="card-bg" style="${bgStyle};position:absolute;inset:0;${filterStyle};transition:filter 0.7s ease,transform 0.7s ease;"></div>
+      <div class="card-overlay"></div>
+      <div class="card-spotlight"></div>
+      <div class="lock-wrap">
+        <div class="lock-circle">🔒</div>
+        <div class="lock-num">No.${String(i + 1).padStart(2, '0')}</div>
+      </div>
+      <div class="done-badge">✓</div>
+      <div class="card-plate">
+        <div class="card-plate-inner">
+          <div class="card-num-label">Exhibit No.${String(i + 1).padStart(2, '0')}</div>
+          <div class="card-name">${b.name}</div>
+          <div class="card-status">${done ? 'แตะเพื่อดูสมาชิก' : 'ยังไม่ได้เยี่ยมชม'}</div>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  // ===== Card 11 — Reward =====
+  const r = document.createElement('div');
+  var today = new Date().toISOString().split('T'); // ✅ แก้ เพิ่ม 
+  var rewardClaimed = localStorage.getItem('reward_claimed_date') === today;
+  r.className = `reward-card ${rewardClaimed ? 'claimed' : allDone ? 'unlocked' : 'locked'}`;
+  if (allDone && !rewardClaimed) r.onclick = showWinModal;
+  let dots = '';
+  for (let i = 0; i < 10; i++) dots += `<div class="mdot ${i < scanned.length ? 'on' : ''}"></div>`;
+  r.innerHTML = `
+    <div class="r-locked">
+      <div class="q-spin-wrap"><div class="q-spin">?</div></div>
+      <div class="r-lock-title">Special Exhibition</div>
+      <div class="r-lock-sub">เยี่ยมชมครบทุกบูธ<br>เพื่อปลดล็อค</div>
+      <div class="mini-dots">${dots}</div>
+      <div class="r-prog-text">${scanned.length} of 10 visited</div>
+    </div>
+    <div class="r-unlocked">
+      <div class="r-trophy">🏆</div>
+      <div class="r-title">The Grand Prize</div>
+      <div class="r-sub">เยี่ยมชมครบแล้ว<br>แตะเพื่อรับรางวัล</div>
+      <button class="r-btn" onclick="event.stopPropagation();showWinModal()">🎁 รับรางวัล</button>
+    </div>
+    <div class="r-claimed">
+      <div class="r-trophy">✅</div>
+      <div class="r-title" style="background:linear-gradient(135deg,#2ecc71,#27ae60,#58d68d);-webkit-background-clip:text;-webkit-text-fill-color:transparent">รับรางวัลแล้ว</div>
+      <div class="r-sub">ขอบคุณที่ร่วมกิจกรรม!<br>Coexist · COSCI</div>
+    </div>
+  `;
+  grid.appendChild(r);
+}
+
+// ═══════════════════════════
+// ✅ showMemberModal
+// ═══════════════════════════
+function showMemberModal(boothId, boothName, boothNum) {
+  try {
+    var modal = document.getElementById('memberModal');
+    if (!modal) return;
+    document.getElementById('memberBoothNum').textContent =
+      'Exhibit No.' + String(boothNum).padStart(2, '0');
+    document.getElementById('memberBoothName').textContent = boothName;
+    var members = [];
+    if (typeof boothMembers !== 'undefined' && boothMembers[boothId]) {
+      members = boothMembers[boothId];
+    }
+    var listEl = document.getElementById('memberList');
+    listEl.innerHTML = '';
+    if (members.length === 0) {
+      listEl.innerHTML = '<div class="member-empty">ไม่มีข้อมูลสมาชิก</div>';
+    } else {
+      var colors = ['#667eea', '#764ba2', '#c9a96e', '#2ecc71', '#e74c3c'];
+      for (var idx = 0; idx < members.length; idx++) {
+        var m = members[idx];
+        var initial = m.name.charAt(0).toUpperCase();
+        var memberCard = document.createElement('div');
+        memberCard.className = 'member-card';
+        memberCard.style.animationDelay = (idx * 0.08) + 's';
+        memberCard.innerHTML =
+          '<div class="member-avatar" style="background:' + colors[idx % 5] + '">' +
+            '<span>' + initial + '</span>' +
+          '</div>' +
+          '<div class="member-info">' +
+            '<div class="member-name">' + m.name + '</div>' +
+            '<a href="https://instagram.com/' + m.ig + '" target="_blank" class="member-ig">' +
+              '📷 @' + m.ig +
+            '</a>' +
+          '</div>';
+        listEl.appendChild(memberCard);
+      }
+    }
+    modal.classList.add('show');
+  } catch (e) {
+    alert('Error: ' + e.message);
+  }
+}
+
+// ===== อัพเดทการ์ด 11 =====
+function updateCard11() {
+  var card = document.querySelector('.reward-card');
+  if (card) {
+    card.className = 'reward-card claimed';
+    card.onclick = null;
+  }
+}
+
+// ===== Modal =====
+function showModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// ===== Progress =====
+function updateProgress() {
+  var n = scanned.length;
+  document.getElementById('scanCount').textContent = n;
+  document.getElementById('progressBar').style.width = (n / 10 * 100) + '%';
+}
+
+// ===== Scanner =====
+function openScanner() {
+  document.getElementById('scannerOverlay').classList.add('show');
+  document.getElementById('mainScanBtn').classList.add('active');
+  document.getElementById('mainScanBtn').innerHTML = '<span>⏹</span><span>หยุดสแกน</span>';
+  html5QrCode = new Html5Qrcode("reader");
+  html5QrCode.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: { width: 220, height: 220 } },
+    onScanSuccess, function(){}
+  ).catch(function() { alert('ไม่สามารถเปิดกล้องได้'); closeScanner(); });
+  scannerOpen = true;
+}
+
+function closeScanner() {
+  document.getElementById('scannerOverlay').classList.remove('show');
+  document.getElementById('mainScanBtn').classList.remove('active');
+  document.getElementById('mainScanBtn').innerHTML = '<span>▣</span><span>สแกน QR Code</span>';
+  if (html5QrCode && scannerOpen) {
+    html5QrCode.stop().then(function() { html5QrCode.clear(); }).catch(function(){});
+  }
+  scannerOpen = false;
+}
+
+// ===== Scan Success =====
+function onScanSuccess(text) {
+  closeScanner();
+  if (text === ADMIN_QR) {
+    scanned = booths.map(function(b) { return b.id; });
+    localStorage.setItem(storageKey, JSON.stringify(scanned));
+    renderGrid(); updateProgress();
+    document.getElementById('successText').textContent = '🔑 Admin Access — ปลดล็อคครบทุกบูธแล้ว!';
+    showModal('successModal');
+    setTimeout(showWinModal, 1500);
+    return;
+  }
+  var booth = booths.find(function(b) { return b.id === text; });
+  if (!booth) return;
+  if (scanned.includes(booth.id)) {
+    document.getElementById('alreadyText').textContent = '"' + booth.name + '" เยี่ยมชมไปแล้ว';
+    showModal('alreadyModal'); return;
+  }
+  scanned.push(booth.id);
+  localStorage.setItem(storageKey, JSON.stringify(scanned));
+  renderGrid(); updateProgress();
+  if (scanned.length >= 10) { setTimeout(showWinModal, 600); }
+  else {
+    document.getElementById('successText').textContent = 'Exhibit No.' + String(booths.indexOf(booth) + 1).padStart(2, '0') + ' — "' + booth.name + '"';
+    showModal('successModal');
+  }
+}
+
+// ===== Win Modal =====
+function showWinModal() {
+  if (scanned.length < 10) return;
+  var today = new Date().toISOString().split('T'); // ✅ แก้ เพิ่ม 
+  var lastClaimed = localStorage.getItem('reward_claimed_date');
+  if (lastClaimed === today) {
+    document.getElementById('reward-pending').style.display = 'none';
+    document.getElementById('reward-claimed').style.display = 'block';
+    var t = localStorage.getItem('reward_claimed_time');
+    if (t) {
+      document.getElementById('claimed-time').textContent =
+        new Date(t).toLocaleString('th-TH');
+    }
+  } else {
+    document.getElementById('reward-pending').style.display = 'block';
+    document.getElementById('reward-claimed').style.display = 'none';
+  }
+  var code = localStorage.getItem(rewardKey);
+  if (!code) {
+    code = 'RW-' + Math.random().toString(36).substring(2, 6).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+    localStorage.setItem(rewardKey, code);
+  }
+  document.getElementById('couponCode').textContent = code;
+  showModal('winModal');
+}
+
+// ===== Claim Reward =====
+function claimReward() {
+  if (scanned.length < 10) {
+    alert('กรุณาสแกนให้ครบ 10 บูธก่อน');
+    return;
+  }
+  var today = new Date().toISOString().split('T'); // ✅ แก้ เพิ่ม 
+  var lastClaimed = localStorage.getItem('reward_claimed_date');
+  if (lastClaimed === today) {
+    document.getElementById('reward-pending').style.display = 'none';
+    document.getElementById('reward-claimed').style.display = 'block';
+    return;
+  }
+  var now = new Date().toISOString();
+  localStorage.setItem('reward_claimed', 'true');
+  localStorage.setItem('reward_claimed_date', today); // ✅ เก็บ string ถูกต้อง
+  localStorage.setItem('reward_claimed_time', now);
+  document.getElementById('reward-pending').style.display = 'none';
+  document.getElementById('reward-claimed').style.display = 'block';
+  document.getElementById('claimed-time').textContent =
+    new Date(now).toLocaleString('th-TH');
+  updateCard11();
+}
+
+init();
+</script>
+</body>
+</html>
