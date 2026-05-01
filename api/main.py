@@ -6,13 +6,16 @@ import datetime
 from flask_cors import CORS
 
 load_dotenv()
-PORT=os.getenv("PY_PORT")
+PORT=int(os.getenv("PY_PORT"))
 app=Flask(__name__)
 CORS(app)
 
 from adminlogin import admin_api
 #ADMIN_login api
 app.register_blueprint(admin_api, url_prefix="/api/admin")
+
+from countdown import countdown_api
+app.register_blueprint(countdown_api, url_prefix="/api")
 
 #dbconect
 def get_db():
