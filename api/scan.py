@@ -14,7 +14,7 @@ def process_scan():
     try:
         data=request.json
         user_id=data.get("user_id")
-        booth_id = data.get("user_id")
+        booth_id = data.get("booth_id")
 
         if not user_id or not booth_id:
             return jsonify({
