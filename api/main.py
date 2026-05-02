@@ -17,6 +17,9 @@ app.register_blueprint(admin_api, url_prefix="/api/admin")
 from countdown import countdown_api
 app.register_blueprint(countdown_api, url_prefix="/api")
 
+from booth import booth_api
+app.register_blueprint(booth_api, url_prefix="/api")
+
 #dbconect
 def get_db():
     conn =mysql.connector.connect(
