@@ -35,6 +35,14 @@ app.register_blueprint(scan_api, url_prefix="/api")
 from excel import excel_api
 app.register_blueprint(excel_api, url_prefix="/api")
 
+#allmember api
+from member import all_members_api
+app.register_blueprint(all_members_api, url_prefix="/api")
+
+#boothmember api
+from member import booth_members_api
+app.register_blueprint(booth_members_api, url_prefix="/api")
+
 #Get_IP
 def get_client_ip():
     forwarded = request.headers.get("X-Forwarded-For")
@@ -43,74 +51,6 @@ def get_client_ip():
         return forwarded.split(",")[0].strip()
     return request.remote_addr
 
-#API สมาชิกของแต่ละบูท
-@app.route("/api/members/<int:booth_id>", methods=["GET"])
-def get_users(booth_id):
-    try:
-        conn=get_db()
-        cursor=conn.cursor(dictionary=True)
-
-        cursor.execute("""
-            SELECT
-                b.boothnum,
-                b.boothname,
-                u.username,
-                u.instagram
-            FROM booths_members bm
-            JOIN thesis_users u ON bm.user_id = u.id
-            JOIN thesis_booths b ON bm.booth_id = b.id
-            WHERE b.id =%s
-        """,(booth_id,))
-        users=cursor.fetchall()
-
-        cursor.close()
-        conn.close()
-
-        return jsonify({
-            "status": "success",
-            "count":len(users),
-            "data":users
-        }),200
-    except Exception as e:
-        return jsonify({
-            "status":"error",
-            "message":str(e)
-        }),500
-
-#Apiสมาชิกของทุกบูธ
-@app.route("/api/members/", methods=["GET"])
-def get_allUsers():
-    try:
-        conn=get_db()
-        cursor=conn.cursor(dictionary=True)
-
-        cursor.execute("""
-            SELECT
-                b.boothnum,
-                b.boothname,
-                u.username,
-                u.instagram
-            FROM booths_members bm
-            JOIN thesis_users u ON bm.user_id = u.id
-            JOIN thesis_booths b ON bm.booth_id = b.id
-            WHERE u.role IN ('admin', 'member')
-            ORDER BY b.boothnum ASC, u.username ASC
-        """)
-        allMembers=cursor.fetchall()
-
-        cursor.close()
-        conn.close()
-
-        return jsonify({
-            "status": "success",
-            "count":len(allMembers),
-            "data":allMembers
-        }),200
-    except Exception as e:
-        return jsonify({
-            "status":"error",
-            "message":str(e)
-        }),500
 
 if __name__ =='__main__':
     is_debug = os.getenv("FLASK_DEBUG", "False").lower() in ("true", "1", "t")
