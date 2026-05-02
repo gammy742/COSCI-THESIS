@@ -11,8 +11,8 @@ booth_api = Blueprint('booth_api', __name__)
 #dbconect
 from getdb import get_db
 
-@booth_api.route("/api/members/<int:booth_id>", methods=["GET"])
-def get_users(booth_id):
+@booth_api.route("/booths", methods=["GET"])
+def get_booths():
     try:
         conn=get_db()
         cursor=conn.cursor(dictionary=True)
@@ -21,13 +21,13 @@ def get_users(booth_id):
             SELECT
                 b.boothnum,
                 b.boothname,
-                u.username,
-                u.instagram
+                b.url,
+                GROUP_CONCAT(u.username SEPARATOR ', ')AS members
             FROM booths_members bm
-            JOIN thesis_users u ON bm.user_id = u.id
-            JOIN thesis_booths b ON bm.booth_id = b.id
-            WHERE b.id =%s
-        """,(booth_id,))
+            JOIN thesis_users u ON bm.user_id=u.id
+            JOIN  thesis_booths b ON bm.booth_id = b.id
+            GROUP BY b.id, b.boothnum,b.boothname,b.url
+        """)
         users=cursor.fetchall()
 
         cursor.close()
