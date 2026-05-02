@@ -23,6 +23,18 @@ app.register_blueprint(booth_api, url_prefix="/api")
 #dbconect
 from getdb import get_db
 
+#join api
+from join import join_api
+app.register_blueprint(join_api, url_prefix="/api")
+
+#scan api
+from scan import scan_api
+app.register_blueprint(scan_api, url_prefix="/api")
+
+#excel-export api
+from excel import excel_api
+app.register_blueprint(excel_api, url_prefix="/api")
+
 #Get_IP
 def get_client_ip():
     forwarded = request.headers.get("X-Forwarded-For")
@@ -100,7 +112,6 @@ def get_allUsers():
             "message":str(e)
         }),500
 
-print(app.url_map)
 if __name__ =='__main__':
     is_debug = os.getenv("FLASK_DEBUG", "False").lower() in ("true", "1", "t")
     app.run(debug=is_debug,port=PORT)
