@@ -21,14 +21,7 @@ from booth import booth_api
 app.register_blueprint(booth_api, url_prefix="/api")
 
 #dbconect
-def get_db():
-    conn =mysql.connector.connect(
-        host=os.getenv("DB_HOST","localhost"),
-        user=os.getenv("DB_USER","root"),
-        port=int(os.getenv("DB_PORT",3306)),
-        database=os.getenv("DB_NAME","mydb")
-    )
-    return conn
+from getdb import get_db
 
 #Get_IP
 def get_client_ip():
@@ -107,7 +100,7 @@ def get_allUsers():
             "message":str(e)
         }),500
 
-
+print(app.url_map)
 if __name__ =='__main__':
     is_debug = os.getenv("FLASK_DEBUG", "False").lower() in ("true", "1", "t")
     app.run(debug=is_debug,port=PORT)
