@@ -1,7 +1,11 @@
 
-
+.env.production
 .env*
 __pycache__
+adminlogin.cpython-313.pyc
+booth.cpython-313.pyc
+countdown.cpython-313.pyc
+getdb.cpython-313.pyc
 
 .DS_Store
 *.pem
