@@ -31,6 +31,10 @@ app.register_blueprint(join_api, url_prefix="/api")
 from scan import scan_api
 app.register_blueprint(scan_api, url_prefix="/api")
 
+#scan api
+from scan import progress_api
+app.register_blueprint(progress_api, url_prefix="/api")
+
 #excel-export api
 from excel import excel_api
 app.register_blueprint(excel_api, url_prefix="/api")

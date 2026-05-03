@@ -10,6 +10,16 @@ def join_event():
     data=request.get_json()
     displayName=data.get('name','').strip()
 
+    #Check content type
+    if not request.is_json:
+        return jsonify({
+            "status":"error",
+            "success":False,
+            "message":"กรุณาส่งข้อมูลในรูปแบบ JSON",
+            "error_code": "INVALID_CONTENT_TYPE"
+        }),400
+    
+    #Check name
     if not displayName:
         return jsonify({
             "status":"error",
