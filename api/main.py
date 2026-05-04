@@ -6,7 +6,7 @@ import datetime
 from flask_cors import CORS
 
 load_dotenv()
-PORT=int(os.getenv("PY_PORT"))
+PORT=int(os.getenv("PY_PORT",8000))
 app=Flask(__name__)
 CORS(app)
 
