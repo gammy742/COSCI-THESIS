@@ -1,5 +1,4 @@
 from flask import Flask,jsonify,request
-import mysql.connector
 from dotenv import load_dotenv
 import os
 import datetime
@@ -9,6 +8,7 @@ load_dotenv()
 PORT=int(os.getenv("PY_PORT",8000))
 app=Flask(__name__)
 CORS(app)
+
 
 from adminlogin import admin_api
 #ADMIN_login api
