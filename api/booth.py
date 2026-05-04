@@ -27,7 +27,7 @@ def get_booths():
             JOIN thesis_booths b ON bm.booth_id = b.id
             GROUP BY b.id, b.boothnum, b.boothname, b.url
         """)
-        columns = [desc for desc in cursor.description]
+        columns = [desc.name for desc in cursor.description]
         rows = cursor.fetchall()
         users = [dict(zip(columns, row)) for row in rows]
         cursor.close()
