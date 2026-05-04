@@ -16,7 +16,7 @@ def activity_countdown():
     m=now.month
     d=now.day
 
-    opening_date=datetime(now.year,month=5,day=17)
+    opening_date=datetime(now.year,5,17)
 
     event_start=datetime(2026, 5, 17, 0, 0, 0)
     event_end=datetime(2026, 5, 18, 23, 59, 59)
