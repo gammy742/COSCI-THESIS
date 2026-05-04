@@ -28,7 +28,7 @@ def export_excel():
         """
 
         cursor.execute(query_all)
-        columns = [desc[0] for desc in cursor.description]
+        columns = [desc.name for desc in cursor.description]
         rows = cursor.fetchall()
         cursor.close()
 

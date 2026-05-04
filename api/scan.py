@@ -5,7 +5,6 @@ scan_api = Blueprint('scan_api', __name__)
 
 @scan_api.route("/scan", methods=["POST"])
 def process_scan():
-
     if not request.is_json:
         return jsonify({
             "status": "error",
@@ -15,7 +14,6 @@ def process_scan():
         }), 400
 
     data = request.get_json(silent=True)
-
     if data is None:
         return jsonify({
             "status": "error",
@@ -24,7 +22,7 @@ def process_scan():
             "error_code": "INVALID_JSON_FORMAT"
         }), 400
 
-    user_id = data.get("user_id")
+    user_id  = data.get("user_id")
     booth_id = data.get("booth_id")
 
     if user_id is None:
@@ -53,19 +51,18 @@ def process_scan():
             "error_code": "INVALID_USER_ID"
         }), 400
 
-    conn = get_db()
+    conn   = get_db()
     cursor = None
-
     try:
         cursor = conn.cursor()
 
+        # ── หา User ──
         cursor.execute("""
             SELECT id, username
             FROM thesis_users
             WHERE id = %s
         """, (user_id,))
         row = cursor.fetchone()
-
         if not row:
             return jsonify({
                 "status": "error",
@@ -74,17 +71,17 @@ def process_scan():
                 "error_code": "USER_NOT_FOUND"
             }), 404
 
-        columns = [desc[0] for desc in cursor.description]
-        user = dict(zip(columns, row))
+        columns  = [desc.name for desc in cursor.description]  # ✅ แก้
+        user     = dict(zip(columns, row))
         username = user['username']
 
+        # ── หา Booth ──
         cursor.execute("""
             SELECT id, boothname, url, boothnum
             FROM thesis_booths
             WHERE boothnum = %s OR id = %s
         """, (booth_id, booth_id))
         row = cursor.fetchone()
-
         if not row:
             return jsonify({
                 "status": "error",
@@ -93,14 +90,14 @@ def process_scan():
                 "error_code": "BOOTH_NOT_FOUND"
             }), 404
 
-        columns = [desc[0] for desc in cursor.description]
-        booth = dict(zip(columns, row))
-
+        columns       = [desc.name for desc in cursor.description]  # ✅ แก้
+        booth         = dict(zip(columns, row))
         real_booth_id = booth['id']
         boothname     = booth['boothname']
         booth_url     = booth['url']
         boothnum      = booth['boothnum']
 
+        # ── เช็คสแกนซ้ำ ──
         cursor.execute("""
             SELECT id FROM user_scans
             WHERE user_id = %s
@@ -108,30 +105,31 @@ def process_scan():
             AND DATE(scanned_at) = CURRENT_DATE
         """, (user_id, real_booth_id))
         existing_scan = cursor.fetchone()
-
         if existing_scan:
             return jsonify({
                 "status": "warning",
                 "success": False,
-                "message": f"คุณ {username} ได้สแกนฐาน {boothname} ไปแล้ววันนี้ กรุณากลับมาใหม่พรุ่งนี้!",
+                "message": f"คุณ {username} ได้สแกนฐาน {boothname} ไปแล้ววันนี้!",
                 "error_code": "ALREADY_SCANNED"
             }), 409
 
+        # ── บันทึก ──
         cursor.execute("""
             INSERT INTO user_scans (user_id, booth_id)
             VALUES (%s, %s)
             RETURNING id
         """, (user_id, real_booth_id))
         conn.commit()
-        scan_id = cursor.fetchone()[0]
+        scan_id = cursor.fetchone()
 
+        # ── นับจำนวน ──
         cursor.execute("""
-            SELECT COUNT(DISTINCT booth_id) AS total
+            SELECT COUNT(DISTINCT booth_id)
             FROM user_scans
             WHERE user_id = %s
             AND DATE(scanned_at) = CURRENT_DATE
         """, (user_id,))
-        total_scanned = cursor.fetchone()[0]
+        total_scanned = cursor.fetchone()
 
         return jsonify({
             "status": "success",
@@ -159,21 +157,17 @@ def process_scan():
             "message": "เกิดข้อผิดพลาดในระบบ",
             "error_details": str(e)
         }), 500
-
     finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
+        if cursor: cursor.close()
+        if conn:   conn.close()
 
 
 progress_api = Blueprint('progress_api', __name__)
 
 @progress_api.route("/progress/<int:user_id>", methods=["GET"])
 def get_progress(user_id):
-    conn = get_db()
+    conn   = get_db()
     cursor = None
-
     try:
         cursor = conn.cursor()
 
@@ -181,7 +175,6 @@ def get_progress(user_id):
             SELECT id FROM thesis_users WHERE id = %s
         """, (user_id,))
         user = cursor.fetchone()
-
         if not user:
             return jsonify({
                 "status": "error",
@@ -196,24 +189,20 @@ def get_progress(user_id):
             WHERE us.user_id = %s
             AND DATE(us.scanned_at) = CURRENT_DATE
         """, (user_id,))
-        rows = cursor.fetchall()
-
-        scanned = [row[0] for row in rows]
+        rows    = cursor.fetchall()
+        scanned = [row for row in rows]  # ✅ อันนี้ปกติ ไม่ต้องแก้
 
         return jsonify({
-            "status": "success",
+            "status":  "success",
             "scanned": scanned
         }), 200
 
     except Exception as e:
         return jsonify({
-            "status": "error",
-            "message": "เกิดข้อผิดพลาดในระบบ",
+            "status":       "error",
+            "message":      "เกิดข้อผิดพลาดในระบบ",
             "error_details": str(e)
         }), 500
-
     finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
+        if cursor: cursor.close()
+        if conn:   conn.close()
