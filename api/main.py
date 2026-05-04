@@ -6,7 +6,7 @@ import datetime
 from flask_cors import CORS
 
 load_dotenv()
-PORT=int(os.getenv("PY_PORT"))
+PORT=int(os.getenv("PY_PORT",8000))
 app=Flask(__name__)
 CORS(app)
 
@@ -62,4 +62,4 @@ def get_client_ip():
 
 if __name__ =='__main__':
     is_debug = os.getenv("FLASK_DEBUG", "False").lower() in ("true", "1", "t")
-    app.run(host="0.0.0.0",debug=is_debug,port=PORT, 8000)
+    app.run(host="0.0.0.0",debug=is_debug,port=PORT)
