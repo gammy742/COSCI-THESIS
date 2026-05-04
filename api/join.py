@@ -7,10 +7,7 @@ from getdb import get_db
 
 @join_api.route("/join", methods=["POST"])
 def join_event():
-    data=request.get_json()
-    displayName=data.get('name','').strip()
-
-    #Check content type
+        #Check content type
     if not request.is_json:
         return jsonify({
             "status":"error",
@@ -18,6 +15,20 @@ def join_event():
             "message":"กรุณาส่งข้อมูลในรูปแบบ JSON",
             "error_code": "INVALID_CONTENT_TYPE"
         }),400
+    
+    data = request.get_json(silent=True)
+    if data is None:
+        return jsonify({
+            "status": "error",
+            "success": False,
+            "message": "รูปแบบ JSON ไม่ถูกต้อง",
+            "error_code": "INVALID_JSON_FORMAT"
+        }), 400
+    
+
+    
+    displayName=data.get('name','').strip()
+
     
     #Check name
     if not displayName:
@@ -33,7 +44,7 @@ def join_event():
     try:
         cursor=conn.cursor()
 
-        sql_query="INSERT INTO thesis_users(username)VALUES(%s)"
+        sql_query="INSERT INTO thesis_users(username) VALUES(%s) RETURNING id"
         cursor.execute( sql_query,(displayName,))
         conn.commit()
         user_id = cursor.fetchone()[0]

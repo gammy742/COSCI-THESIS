@@ -66,7 +66,7 @@ def get_dashboard():
             GROUP BY b.id, b.boothname, b.boothnum
             ORDER BY b.boothnum
         """)
-        columns = [desc[0] for desc in cursor.description]
+        columns = [desc.name for desc in cursor.description]
         rows = cursor.fetchall()
         booth_stats = [dict(zip(columns, row)) for row in rows]
 
