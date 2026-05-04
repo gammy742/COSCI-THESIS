@@ -36,7 +36,7 @@ def join_event():
         sql_query="INSERT INTO thesis_users(username)VALUES(%s)"
         cursor.execute( sql_query,(displayName,))
         conn.commit()
-        user_id = cursor.lastrowid
+        user_id = cursor.fetchone()[0]
 
         return jsonify({
             "status":"success",

@@ -6,7 +6,6 @@ scan_api = Blueprint('scan_api', __name__)
 @scan_api.route("/scan", methods=["POST"])
 def process_scan():
 
-    # ── Validate Request ───────────────────────────────
     if not request.is_json:
         return jsonify({
             "status": "error",
@@ -28,7 +27,6 @@ def process_scan():
     user_id = data.get("user_id")
     booth_id = data.get("booth_id")
 
-    # 🔥 FIX: เช็คแบบถูกต้อง
     if user_id is None:
         return jsonify({
             "status": "error",
@@ -45,7 +43,6 @@ def process_scan():
             "error_code": "MISSING_BOOTH_ID"
         }), 400
 
-    # 🔥 FIX: cast type ให้ชัด
     try:
         user_id = int(user_id)
     except:
@@ -60,17 +57,16 @@ def process_scan():
     cursor = None
 
     try:
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
 
-        # ── Get User ───────────────────────────────
         cursor.execute("""
             SELECT id, username
             FROM thesis_users
             WHERE id = %s
         """, (user_id,))
-        user = cursor.fetchone()
+        row = cursor.fetchone()
 
-        if not user:
+        if not row:
             return jsonify({
                 "status": "error",
                 "success": False,
@@ -78,39 +74,39 @@ def process_scan():
                 "error_code": "USER_NOT_FOUND"
             }), 404
 
+        columns = [desc[0] for desc in cursor.description]
+        user = dict(zip(columns, row))
         username = user['username']
 
-        # ── Get Booth ───────────────────────────────
         cursor.execute("""
             SELECT id, boothname, url, boothnum
             FROM thesis_booths
             WHERE boothnum = %s OR id = %s
         """, (booth_id, booth_id))
-        booth = cursor.fetchone()
+        row = cursor.fetchone()
 
-        if not booth:
+        if not row:
             return jsonify({
                 "status": "error",
                 "success": False,
                 "message": f"ไม่พบบูธ {booth_id} ในระบบ",
                 "error_code": "BOOTH_NOT_FOUND"
             }), 404
-        
+
+        columns = [desc[0] for desc in cursor.description]
+        booth = dict(zip(columns, row))
 
         real_booth_id = booth['id']
         boothname     = booth['boothname']
         booth_url     = booth['url']
         boothnum      = booth['boothnum']
 
-        print("booth found:", booth)
-
-        # ── Check Duplicate Scan ─────────────────────
         cursor.execute("""
             SELECT id FROM user_scans
             WHERE user_id = %s
             AND booth_id = %s
-            AND DATE(scanned_at) = CURDATE()
-        """, (user_id, real_booth_id))  # 🔥 FIX สำคัญ
+            AND DATE(scanned_at) = CURRENT_DATE
+        """, (user_id, real_booth_id))
         existing_scan = cursor.fetchone()
 
         if existing_scan:
@@ -120,28 +116,23 @@ def process_scan():
                 "message": f"คุณ {username} ได้สแกนฐาน {boothname} ไปแล้ววันนี้ กรุณากลับมาใหม่พรุ่งนี้!",
                 "error_code": "ALREADY_SCANNED"
             }), 409
-        print("existing_scan:", existing_scan)
-        # ── Insert Scan ─────────────────────────────
+
         cursor.execute("""
             INSERT INTO user_scans (user_id, booth_id)
             VALUES (%s, %s)
+            RETURNING id
         """, (user_id, real_booth_id))
         conn.commit()
-        print("inserted! scan_id:", cursor.lastrowid)
-        scan_id = cursor.lastrowid
+        scan_id = cursor.fetchone()[0]
 
-        # ── Count Progress ───────────────────────────
         cursor.execute("""
             SELECT COUNT(DISTINCT booth_id) AS total
             FROM user_scans
             WHERE user_id = %s
-            AND DATE(scanned_at) = CURDATE()
+            AND DATE(scanned_at) = CURRENT_DATE
         """, (user_id,))
-        count = cursor.fetchone()
+        total_scanned = cursor.fetchone()[0]
 
-        total_scanned = count['total'] if count else 0
-
-        # ── Response ────────────────────────────────
         return jsonify({
             "status": "success",
             "success": True,
@@ -162,7 +153,6 @@ def process_scan():
     except Exception as e:
         if conn:
             conn.rollback()
-
         return jsonify({
             "status": "error",
             "success": False,
@@ -176,16 +166,17 @@ def process_scan():
         if conn:
             conn.close()
 
+
 progress_api = Blueprint('progress_api', __name__)
+
 @progress_api.route("/progress/<int:user_id>", methods=["GET"])
 def get_progress(user_id):
     conn = get_db()
     cursor = None
 
     try:
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
 
-        # เช็คว่า user มีอยู่จริง
         cursor.execute("""
             SELECT id FROM thesis_users WHERE id = %s
         """, (user_id,))
@@ -198,17 +189,16 @@ def get_progress(user_id):
                 "error_code": "USER_NOT_FOUND"
             }), 404
 
-        # ดึง boothnum ที่ scan วันนี้
         cursor.execute("""
             SELECT b.boothnum
             FROM user_scans us
             JOIN thesis_booths b ON us.booth_id = b.id
             WHERE us.user_id = %s
-            AND DATE(us.scanned_at) = CURDATE()
+            AND DATE(us.scanned_at) = CURRENT_DATE
         """, (user_id,))
         rows = cursor.fetchall()
 
-        scanned = [row['boothnum'] for row in rows]
+        scanned = [row[0] for row in rows]
 
         return jsonify({
             "status": "success",

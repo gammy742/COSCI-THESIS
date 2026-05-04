@@ -62,4 +62,4 @@ def get_client_ip():
 
 if __name__ =='__main__':
     is_debug = os.getenv("FLASK_DEBUG", "False").lower() in ("true", "1", "t")
-    app.run(debug=is_debug,port=PORT)
+    app.run(host="0.0.0.0",debug=is_debug,port=PORT)
