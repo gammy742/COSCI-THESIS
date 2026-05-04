@@ -47,6 +47,10 @@ app.register_blueprint(all_members_api, url_prefix="/api")
 from member import booth_members_api
 app.register_blueprint(booth_members_api, url_prefix="/api")
 
+#reward
+from reward import reward_api
+app.register_blueprint(reward_api, url_prefix="/api")
+
 #Get_IP
 def get_client_ip():
     forwarded = request.headers.get("X-Forwarded-For")

@@ -22,7 +22,8 @@ def get_booths():
                 b.boothnum,
                 b.boothname,
                 b.url,
-                GROUP_CONCAT(u.username SEPARATOR ', ')AS members
+                GROUP_CONCAT(u.username SEPARATOR '||')AS members,
+                GROUP_CONCAT(COALESCE(u.instagram,'')SEPARATOR '||')AS instagrams
             FROM booths_members bm
             JOIN thesis_users u ON bm.user_id=u.id
             JOIN  thesis_booths b ON bm.booth_id = b.id
