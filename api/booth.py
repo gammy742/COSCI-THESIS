@@ -15,21 +15,23 @@ from getdb import get_db
 def get_booths():
     try:
         conn=get_db()
-        cursor=conn.cursor(dictionary=True)
+        cursor=conn.cursor()
 
         cursor.execute("""
             SELECT
                 b.boothnum,
                 b.boothname,
                 b.url,
-                GROUP_CONCAT(u.username SEPARATOR '||')AS members,
-                GROUP_CONCAT(COALESCE(u.instagram,'')SEPARATOR '||')AS instagrams
+                STRING_AGG(u.username SEPARATOR '||')AS members,
+                STRING_AGG(COALESCE(u.instagram,'')SEPARATOR '||')AS instagrams
             FROM booths_members bm
             JOIN thesis_users u ON bm.user_id=u.id
             JOIN  thesis_booths b ON bm.booth_id = b.id
             GROUP BY b.id, b.boothnum,b.boothname,b.url
         """)
-        users=cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+        rows = cursor.fetchall()
+        users = [dict(zip(columns, row)) for row in rows]
 
         cursor.close()
         conn.close()
