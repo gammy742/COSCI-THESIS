@@ -43,7 +43,7 @@ def process_scan():
 
     try:
         user_id = int(user_id)
-    except:
+    except (ValueError, TypeError):  # ✅ ระบุ Exception ให้ชัดเจน
         return jsonify({
             "status": "error",
             "success": False,
@@ -71,7 +71,7 @@ def process_scan():
                 "error_code": "USER_NOT_FOUND"
             }), 404
 
-        columns  = [desc.name for desc in cursor.description]  # ✅ แก้
+        columns  = [desc.name for desc in cursor.description]
         user     = dict(zip(columns, row))
         username = user['username']
 
@@ -90,7 +90,7 @@ def process_scan():
                 "error_code": "BOOTH_NOT_FOUND"
             }), 404
 
-        columns       = [desc.name for desc in cursor.description]  # ✅ แก้
+        columns       = [desc.name for desc in cursor.description]
         booth         = dict(zip(columns, row))
         real_booth_id = booth['id']
         boothname     = booth['boothname']
@@ -119,8 +119,10 @@ def process_scan():
             VALUES (%s, %s)
             RETURNING id
         """, (user_id, real_booth_id))
-        conn.commit()
+
+        # ✅ Fix 1+2: fetchone() ก่อน commit() และดึง  เพื่อให้ได้ตัวเลข
         scan_id = cursor.fetchone()
+        conn.commit()
 
         # ── นับจำนวน ──
         cursor.execute("""
@@ -129,6 +131,8 @@ def process_scan():
             WHERE user_id = %s
             AND DATE(scanned_at) = CURRENT_DATE
         """, (user_id,))
+
+        # ✅ Fix 3: ดึง  เพื่อให้ได้ตัวเลข ไม่ใช่ tuple
         total_scanned = cursor.fetchone()
 
         return jsonify({
@@ -189,8 +193,10 @@ def get_progress(user_id):
             WHERE us.user_id = %s
             AND DATE(us.scanned_at) = CURRENT_DATE
         """, (user_id,))
-        rows    = cursor.fetchall()
-        scanned = [row for row in rows]  # ✅ อันนี้ปกติ ไม่ต้องแก้
+        rows = cursor.fetchall()
+
+        # ✅ Fix 4: row คือ tuple (3,) ต้องดึง row เพื่อให้ได้ boothnum
+        scanned = [row for row in rows]
 
         return jsonify({
             "status":  "success",
@@ -199,8 +205,8 @@ def get_progress(user_id):
 
     except Exception as e:
         return jsonify({
-            "status":       "error",
-            "message":      "เกิดข้อผิดพลาดในระบบ",
+            "status":        "error",
+            "message":       "เกิดข้อผิดพลาดในระบบ",
             "error_details": str(e)
         }), 500
     finally:

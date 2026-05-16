@@ -62,7 +62,7 @@ def get_allUsers():
             ORDER BY b.boothnum ASC, u.username ASC
         """)
 
-        columns = [desc[0] for desc in cursor.description]
+        columns    = [desc.name for desc in cursor.description]
         rows = cursor.fetchall()
         allMembers = [dict(zip(columns, row)) for row in rows]
 
