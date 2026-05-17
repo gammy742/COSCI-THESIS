@@ -225,6 +225,7 @@ def process_scan():
                 "boothnum":     boothnum,
                 "booth_url":    booth_url,
                 "total_scanned": total_scanned,
+                "total_booths":  total_booths, 
                 "remaining":    max(0, total_booths - total_scanned)
             }
         }), 201
