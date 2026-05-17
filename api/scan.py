@@ -73,10 +73,9 @@ def process_scan():
 
     # ─────────────────────────────────────────
     # Validate booth_id
-    # แก้: ใช้ `is None` แทน `not booth_id`
-    #      เพื่อรองรับกรณี booth_id = 0
+    # รองรับทั้ง int และ string (QR code อาจเป็น string เช่น "B001")
     # ─────────────────────────────────────────
-    if booth_id is None:
+    if booth_id is None or str(booth_id).strip() == "":
         return jsonify({
             "status": "error",
             "success": False,
@@ -84,16 +83,8 @@ def process_scan():
             "error_code": "MISSING_BOOTH_ID"
         }), 400
 
-    # แปลง booth_id เป็น int (ถ้าเป็นตัวเลข)
-    try:
-        booth_id = int(booth_id)
-    except (ValueError, TypeError):
-        return jsonify({
-            "status": "error",
-            "success": False,
-            "message": "booth_id ต้องเป็นตัวเลข",
-            "error_code": "INVALID_BOOTH_ID"
-        }), 400
+    # normalize: strip whitespace เผื่อ QR scan แล้วได้ space ติดมา
+    booth_id = str(booth_id).strip()
 
     conn   = get_db()
     cursor = None
@@ -126,9 +117,9 @@ def process_scan():
 
         # =========================================================
         # หา Booth
-        # แก้: แยก query boothnum และ id ออกจากกัน
-        #      เพื่อไม่ให้ OR ทำให้ match ผิดตัว
-        #      — query boothnum ก่อน ถ้าไม่เจอค่อย fallback ด้วย id
+        # booth_id อาจเป็น string (QR code) หรือตัวเลข
+        # — query boothnum (TEXT) ก่อนเสมอ
+        # — ถ้าไม่เจอ และ booth_id เป็นตัวเลขล้วน → fallback query ด้วย id
         # =========================================================
         cursor.execute("""
             SELECT id, boothname, url, boothnum
@@ -138,13 +129,13 @@ def process_scan():
 
         row = cursor.fetchone()
 
-        # fallback: ลอง query ด้วย id ถ้าไม่เจอด้วย boothnum
-        if not row:
+        # fallback: ลอง query ด้วย id เฉพาะกรณี booth_id เป็นตัวเลขล้วน
+        if not row and booth_id.isdigit():
             cursor.execute("""
                 SELECT id, boothname, url, boothnum
                 FROM thesis_booths
                 WHERE id = %s
-            """, (booth_id,))
+            """, (int(booth_id),))
             row = cursor.fetchone()
 
         if not row:
