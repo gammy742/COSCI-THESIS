@@ -4,6 +4,17 @@ from getdb import get_db
 scan_api = Blueprint('scan_api', __name__)
 progress_api = Blueprint('progress_api', __name__)
 
+# =========================================================
+# จำนวน booth ทั้งหมด (ควร query จาก DB แทน hardcode)
+# =========================================================
+TOTAL_BOOTHS = 10
+
+
+def get_total_booths(cursor):
+    """นับจำนวน booth ทั้งหมดจาก DB แทนการ hardcode"""
+    cursor.execute("SELECT COUNT(*) FROM thesis_booths")
+    return cursor.fetchone()[0]
+
 
 # =========================================================
 # SCAN API
@@ -35,13 +46,14 @@ def process_scan():
             "error_code": "INVALID_JSON_FORMAT"
         }), 400
 
-    user_id = data.get("user_id")
+    user_id  = data.get("user_id")
     booth_id = data.get("booth_id")
 
     # ─────────────────────────────────────────
     # Validate user_id
+    # แก้: เช็ค None และ string ว่างก่อนแปลง int
     # ─────────────────────────────────────────
-    if user_id is None:
+    if user_id is None or str(user_id).strip() == "":
         return jsonify({
             "status": "error",
             "success": False,
@@ -49,23 +61,8 @@ def process_scan():
             "error_code": "MISSING_USER_ID"
         }), 400
 
-    # ─────────────────────────────────────────
-    # Validate booth_id
-    # ─────────────────────────────────────────
-    if not booth_id:
-        return jsonify({
-            "status": "error",
-            "success": False,
-            "message": "กรุณาระบุ booth_id",
-            "error_code": "MISSING_BOOTH_ID"
-        }), 400
-
-    # ─────────────────────────────────────────
-    # แปลง user_id เป็น int
-    # ─────────────────────────────────────────
     try:
         user_id = int(user_id)
-
     except (ValueError, TypeError):
         return jsonify({
             "status": "error",
@@ -74,7 +71,31 @@ def process_scan():
             "error_code": "INVALID_USER_ID"
         }), 400
 
-    conn = get_db()
+    # ─────────────────────────────────────────
+    # Validate booth_id
+    # แก้: ใช้ `is None` แทน `not booth_id`
+    #      เพื่อรองรับกรณี booth_id = 0
+    # ─────────────────────────────────────────
+    if booth_id is None:
+        return jsonify({
+            "status": "error",
+            "success": False,
+            "message": "กรุณาระบุ booth_id",
+            "error_code": "MISSING_BOOTH_ID"
+        }), 400
+
+    # แปลง booth_id เป็น int (ถ้าเป็นตัวเลข)
+    try:
+        booth_id = int(booth_id)
+    except (ValueError, TypeError):
+        return jsonify({
+            "status": "error",
+            "success": False,
+            "message": "booth_id ต้องเป็นตัวเลข",
+            "error_code": "INVALID_BOOTH_ID"
+        }), 400
+
+    conn   = get_db()
     cursor = None
 
     try:
@@ -100,20 +121,31 @@ def process_scan():
             }), 404
 
         columns = [desc.name for desc in cursor.description]
-        user = dict(zip(columns, row))
-
+        user    = dict(zip(columns, row))
         username = user["username"]
 
         # =========================================================
         # หา Booth
+        # แก้: แยก query boothnum และ id ออกจากกัน
+        #      เพื่อไม่ให้ OR ทำให้ match ผิดตัว
+        #      — query boothnum ก่อน ถ้าไม่เจอค่อย fallback ด้วย id
         # =========================================================
         cursor.execute("""
             SELECT id, boothname, url, boothnum
             FROM thesis_booths
-            WHERE boothnum = %s OR id = %s
-        """, (booth_id, booth_id))
+            WHERE boothnum = %s
+        """, (booth_id,))
 
         row = cursor.fetchone()
+
+        # fallback: ลอง query ด้วย id ถ้าไม่เจอด้วย boothnum
+        if not row:
+            cursor.execute("""
+                SELECT id, boothname, url, boothnum
+                FROM thesis_booths
+                WHERE id = %s
+            """, (booth_id,))
+            row = cursor.fetchone()
 
         if not row:
             return jsonify({
@@ -123,23 +155,30 @@ def process_scan():
                 "error_code": "BOOTH_NOT_FOUND"
             }), 404
 
-        columns = [desc.name for desc in cursor.description]
-        booth = dict(zip(columns, row))
-
+        columns      = [desc.name for desc in cursor.description]
+        booth        = dict(zip(columns, row))
         real_booth_id = booth["id"]
-        boothname = booth["boothname"]
-        booth_url = booth["url"]
-        boothnum = booth["boothnum"]
+        boothname    = booth["boothname"]
+        booth_url    = booth["url"]
+        boothnum     = booth["boothnum"]
 
         # =========================================================
-        # เช็คสแกนซ้ำ
+        # นับจำนวน booth ทั้งหมดจาก DB (แทน hardcode)
+        # =========================================================
+        total_booths = get_total_booths(cursor)
+
+        # =========================================================
+        # เช็คสแกนซ้ำ + Lock row เพื่อป้องกัน Race Condition
+        # แก้: ใช้ SELECT FOR UPDATE + AT TIME ZONE เพื่อ timezone
         # =========================================================
         cursor.execute("""
             SELECT id
             FROM user_scans
-            WHERE user_id = %s
-            AND booth_id = %s
-            AND DATE(scanned_at) = CURRENT_DATE
+            WHERE user_id  = %s
+              AND booth_id  = %s
+              AND DATE(scanned_at AT TIME ZONE 'Asia/Bangkok') =
+                  CURRENT_DATE AT TIME ZONE 'Asia/Bangkok'
+            FOR UPDATE
         """, (user_id, real_booth_id))
 
         existing_scan = cursor.fetchone()
@@ -161,21 +200,20 @@ def process_scan():
             RETURNING id
         """, (user_id, real_booth_id))
 
-        # IMPORTANT:
-        # fetchone() จะได้ tuple เช่น (5,)
-        # ต้องดึง index [0]
         scan_id = cursor.fetchone()[0]
 
         conn.commit()
 
         # =========================================================
-        # นับจำนวนที่สแกนวันนี้
+        # นับจำนวนที่สแกนวันนี้ (หลัง commit)
+        # แก้: ใช้ timezone เดียวกับ duplicate check
         # =========================================================
         cursor.execute("""
             SELECT COUNT(DISTINCT booth_id)
             FROM user_scans
             WHERE user_id = %s
-            AND DATE(scanned_at) = CURRENT_DATE
+              AND DATE(scanned_at AT TIME ZONE 'Asia/Bangkok') =
+                  CURRENT_DATE AT TIME ZONE 'Asia/Bangkok'
         """, (user_id,))
 
         total_scanned = cursor.fetchone()[0]
@@ -188,25 +226,27 @@ def process_scan():
             "success": True,
             "message": f"สแกนสำเร็จ! ยินดีต้อนรับคุณ {username}",
             "data": {
-                "scan_id": scan_id,
-                "user_id": user_id,
-                "username": username,
-                "booth_id": real_booth_id,
-                "boothname": boothname,
-                "boothnum": boothnum,
-                "booth_url": booth_url,
+                "scan_id":      scan_id,
+                "user_id":      user_id,
+                "username":     username,
+                "booth_id":     real_booth_id,
+                "boothname":    boothname,
+                "boothnum":     boothnum,
+                "booth_url":    booth_url,
                 "total_scanned": total_scanned,
-                "remaining": max(0, 10 - total_scanned)
+                "remaining":    max(0, total_booths - total_scanned)
             }
         }), 201
 
     except Exception as e:
 
-        # rollback ถ้า SQL พัง
-        if conn:
-            conn.rollback()
+        # แก้: ห่อ rollback ด้วย try-except ป้องกัน error ซ้อน
+        try:
+            if conn:
+                conn.rollback()
+        except Exception:
+            pass
 
-        # log ฝั่ง server
         print("SCAN API ERROR:", e)
 
         return jsonify({
@@ -216,10 +256,8 @@ def process_scan():
         }), 500
 
     finally:
-
         if cursor:
             cursor.close()
-
         if conn:
             conn.close()
 
@@ -230,7 +268,7 @@ def process_scan():
 @progress_api.route("/progress/<int:user_id>", methods=["GET"])
 def get_progress(user_id):
 
-    conn = get_db()
+    conn   = get_db()
     cursor = None
 
     try:
@@ -255,31 +293,37 @@ def get_progress(user_id):
             }), 404
 
         # =========================================================
+        # นับจำนวน booth ทั้งหมดจาก DB (แทน hardcode)
+        # =========================================================
+        total_booths = get_total_booths(cursor)
+
+        # =========================================================
         # ดึง booth ที่สแกนวันนี้
+        # แก้: ใช้ timezone เดียวกัน
         # =========================================================
         cursor.execute("""
             SELECT b.boothnum
             FROM user_scans us
             JOIN thesis_booths b
-                ON us.booth_id = b.id
+              ON us.booth_id = b.id
             WHERE us.user_id = %s
-            AND DATE(us.scanned_at) = CURRENT_DATE
+              AND DATE(us.scanned_at AT TIME ZONE 'Asia/Bangkok') =
+                  CURRENT_DATE AT TIME ZONE 'Asia/Bangkok'
         """, (user_id,))
 
         rows = cursor.fetchall()
 
-        # rows จะเป็น [(1,), (3,), (5,)]
-        # ต้องแปลงเป็น [1,3,5]
+        # rows จะเป็น [(1,), (3,), (5,)]  →  แปลงเป็น [1, 3, 5]
         scanned = [row[0] for row in rows]
 
         # =========================================================
         # Response
         # =========================================================
         return jsonify({
-            "status": "success",
-            "scanned": scanned,
-            "total": len(scanned),
-            "remaining": max(0, 10 - len(scanned))
+            "status":    "success",
+            "scanned":   scanned,
+            "total":     len(scanned),
+            "remaining": max(0, total_booths - len(scanned))
         }), 200
 
     except Exception as e:
@@ -287,14 +331,12 @@ def get_progress(user_id):
         print("PROGRESS API ERROR:", e)
 
         return jsonify({
-            "status": "error",
+            "status":  "error",
             "message": "เกิดข้อผิดพลาดในระบบ"
         }), 500
 
     finally:
-
         if cursor:
             cursor.close()
-
         if conn:
             conn.close()
