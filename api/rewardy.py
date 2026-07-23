@@ -6,14 +6,19 @@ reward_api = Blueprint('reward_api', __name__)
 @reward_api.route("/reward/claim", methods=["POST"])
 def claim_reward():
     data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({"status": "error", "message": "กรุณาส่งข้อมูลในรูปแบบ JSON"}), 400
+
     user_id = data.get("user_id")
 
     if not user_id:
         return jsonify({"status": "error", "message": "กรุณาระบุ user_id"}), 400
 
-    conn = get_db()
+    conn = None
     cursor = None
     try:
+        conn = get_db()
         cursor = conn.cursor()
 
         cursor.execute("""
@@ -33,7 +38,8 @@ def claim_reward():
         return jsonify({"status": "success", "message": "บันทึกการรับรางวัลสำเร็จ"}), 201
 
     except Exception as e:
-        conn.rollback()
+        if conn:
+            conn.rollback()
         return jsonify({"status": "error", "message": str(e)}), 500
     finally:
         if cursor: cursor.close()
@@ -42,9 +48,10 @@ def claim_reward():
 
 @reward_api.route("/reward/dashboard", methods=["GET"])
 def get_dashboard():
-    conn = get_db()
+    conn = None
     cursor = None
     try:
+        conn = get_db()
         cursor = conn.cursor()
 
         cursor.execute("SELECT COUNT(*) AS total FROM thesis_users")

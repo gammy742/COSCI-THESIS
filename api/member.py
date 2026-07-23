@@ -7,6 +7,8 @@ from getdb import get_db
 
 @booth_members_api.route("/members/<int:booth_id>", methods=["GET"])
 def get_users(booth_id):
+    conn = None
+    cursor = None
     try:
         conn = get_db()
         cursor = conn.cursor()
@@ -27,9 +29,6 @@ def get_users(booth_id):
         rows = cursor.fetchall()
         users = [dict(zip(columns, row)) for row in rows]
 
-        cursor.close()
-        conn.close()
-
         return jsonify({
             "status": "success",
             "count": len(users),
@@ -42,9 +41,17 @@ def get_users(booth_id):
             "message": str(e)
         }), 500
 
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
 
 @all_members_api.route("/members", methods=["GET"])
 def get_allUsers():
+    conn = None
+    cursor = None
     try:
         conn = get_db()
         cursor = conn.cursor()
@@ -62,12 +69,9 @@ def get_allUsers():
             ORDER BY b.boothnum ASC, u.username ASC
         """)
 
-        columns    = [desc.name for desc in cursor.description]
+        columns = [desc.name for desc in cursor.description]
         rows = cursor.fetchall()
         allMembers = [dict(zip(columns, row)) for row in rows]
-
-        cursor.close()
-        conn.close()
 
         return jsonify({
             "status": "success",
@@ -80,3 +84,9 @@ def get_allUsers():
             "status": "error",
             "message": str(e)
         }), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()

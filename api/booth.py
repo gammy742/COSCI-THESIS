@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 import os
 import logging
-from datetime import datetime 
+from datetime import datetime
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -12,6 +12,8 @@ from getdb import get_db
 
 @booth_api.route("/booths", methods=["GET"])
 def get_booths():
+    conn = None
+    cursor = None
     try:
         conn = get_db()
         cursor = conn.cursor()
@@ -30,8 +32,6 @@ def get_booths():
         columns = [desc.name for desc in cursor.description]
         rows = cursor.fetchall()
         users = [dict(zip(columns, row)) for row in rows]
-        cursor.close()
-        conn.close()
         return jsonify({
             "status": "success",
             "count": len(users),
@@ -42,3 +42,8 @@ def get_booths():
             "status": "error",
             "message": str(e)
         }), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
