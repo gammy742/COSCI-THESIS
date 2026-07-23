@@ -2,20 +2,18 @@ from flask import Blueprint, jsonify, request
 
 join_api = Blueprint('join_api', __name__)
 
-#dbconect
 from getdb import get_db
 
 @join_api.route("/join", methods=["POST"])
 def join_event():
-        #Check content type
     if not request.is_json:
         return jsonify({
-            "status":"error",
-            "success":False,
-            "message":"กรุณาส่งข้อมูลในรูปแบบ JSON",
+            "status": "error",
+            "success": False,
+            "message": "กรุณาส่งข้อมูลในรูปแบบ JSON",
             "error_code": "INVALID_CONTENT_TYPE"
-        }),400
-    
+        }), 400
+
     data = request.get_json(silent=True)
     if data is None:
         return jsonify({
@@ -24,50 +22,46 @@ def join_event():
             "message": "รูปแบบ JSON ไม่ถูกต้อง",
             "error_code": "INVALID_JSON_FORMAT"
         }), 400
-    
 
-    
-    displayName=data.get('name','').strip()
+    displayName = data.get('name', '').strip()
 
-    
-    #Check name
     if not displayName:
         return jsonify({
-            "status":"error",
-            "success":False,
-            "message":"กรุณากรอกชื่อก่อนเข้าใช้งาน"
-        }),400
-    
-    conn=get_db()
-    cursor=None
+            "status": "error",
+            "success": False,
+            "message": "กรุณากรอกชื่อก่อนเข้าใช้งาน"
+        }), 400
+
+    conn = None
+    cursor = None
 
     try:
-        cursor=conn.cursor()
+        conn = get_db()
+        cursor = conn.cursor()
 
-        sql_query="INSERT INTO thesis_users(username) VALUES(%s) RETURNING id"
-        cursor.execute( sql_query,(displayName,))
+        sql_query = "INSERT INTO thesis_users(username) VALUES(%s) RETURNING id"
+        cursor.execute(sql_query, (displayName,))
         conn.commit()
         user_id = cursor.fetchone()[0]
 
         return jsonify({
-            "status":"success",
-            "success":True,
-            "message":"เข้าร่วมกิจกรรมสำเร็จ",
-            "data":{
-                "id":user_id,
-                "name":displayName
+            "status": "success",
+            "success": True,
+            "message": "เข้าร่วมกิจกรรมสำเร็จ",
+            "data": {
+                "id": user_id,
+                "name": displayName
             }
-        }),200
+        }), 200
     except Exception as e:
         if conn:
             conn.rollback()
-
         return jsonify({
-            "status":"error",
-            "success":False,
-            "message":"เกิดข้อผิดพลาดในระบบ ไม่สามารถเข้าร่วมได้",
+            "status": "error",
+            "success": False,
+            "message": "เกิดข้อผิดพลาดในระบบ ไม่สามารถเข้าร่วมได้",
             "error_details": str(e)
-        }),500
+        }), 500
     finally:
         if cursor:
             cursor.close()
