@@ -59,6 +59,13 @@ def get_client_ip():
         return forwarded.split(",")[0].strip()
     return request.remote_addr
 
+#vercel connect
+@app.route("/")
+def home():
+    return {
+        "status": "running",
+        "platform": "Vercel"
+    }
 
 if __name__ =='__main__':
     is_debug = os.getenv("FLASK_DEBUG", "False").lower() in ("true", "1", "t")
